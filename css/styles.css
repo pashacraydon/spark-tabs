@@ -1,0 +1,150 @@
+ul {
+	min-width: 400px;
+	list-style-type: none;
+}
+
+body,
+ul li,
+ul,
+ul li a {
+	padding: 0;
+	margin: 0;
+}
+
+ul li {
+	position: relative;
+	padding: 15px 60px 15px 15px;
+	margin: 0;
+	background-color: #150385;
+	border-bottom: 1px solid rgba(255,255,255,0.25);
+}
+
+ul li:hover .hover-panel {
+	background-color: #150385;
+}
+
+ul li:nth-child(1),
+ul li:nth-child(1):hover .hover-panel {
+	background-color: #FF7808;
+}
+
+ul li:nth-child(2),
+ul li:nth-child(2):hover .hover-panel {
+	background-color: #FF5101;
+}
+
+ul li:nth-child(3),
+ul li:nth-child(3):hover .hover-panel {
+	background-color: #FE3200;
+}
+
+ul li:nth-child(4),
+ul li:nth-child(4):hover .hover-panel {
+	background-color: #F10013;
+}
+
+ul li:nth-child(5),
+ul li:nth-child(5):hover .hover-panel {
+	background-color: #D20145;
+}
+
+ul li:nth-child(6),
+ul li:nth-child(6):hover .hover-panel {
+	background-color: #C40058;
+}
+
+ul li:nth-child(7),
+ul li:nth-child(7):hover .hover-panel {
+	background-color: #B40066;
+}
+
+ul li:nth-child(8),
+ul li:nth-child(8):hover .hover-panel {
+	background-color: #A00574;
+}
+
+ul li:nth-child(9),
+ul li:nth-child(9):hover .hover-panel {
+	background-color: #7A0186;
+}
+
+ul li:nth-child(10),
+ul li:nth-child(10):hover .hover-panel {
+	background-color: #4E0189;
+}
+
+ul li:nth-child(11),
+ul li:nth-child(11):hover .hover-panel {
+	background-color: #2F0087;
+}
+
+ul li a {
+	font-size: 15px;
+	color: #FFF;
+	text-decoration: none;
+	font-weight: 200;
+}
+
+.hover-panel {
+	opacity: 0;
+	position: absolute;
+	width: 88%;
+	height:100%;
+	right: 0;
+	top:0;
+	z-index: 999;
+    -webkit-transition: opacity .3s ease-in-out;
+    -moz-transition: opacity .3s ease-in-out;
+    -ms-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+}
+
+.hover-panel a {
+	display: inline-block;
+	margin: 0 15px 0;
+	font-size:16px;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+fieldset {
+	border: none;
+}
+
+.title {
+	display: inline-block;
+	padding: 0 0 0 40px;
+}
+
+.time-ago {
+	color: #fff;
+	position: absolute;
+	right: 10px;
+	top: 15px;
+}
+
+.filter-hidden {
+	display: none;
+}
+
+.selected {
+    -webkit-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,0.5);
+    -moz-box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,0.5);
+    box-shadow:inset 0px 0px 0px 3px rgba(255,255,255,0.5);
+}
+
+img {
+	max-width: 25px;
+	position: absolute;
+	left: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+ul li:hover .hover-panel {
+	display: block;
+	opacity: 1;
+}
+
