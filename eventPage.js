@@ -1,17 +1,9 @@
-function TabList () {
+function Tablist () {
 	this.tabs = [];
 }
 
-/*
-	chrome.notifications.create('title-stuff', {
-		'type': 'basic',
-		'iconUrl': 'icon.png',
-		'title': 'stuff',
-		'message': JSON.stringify(tab) },
-		function () {
-	}); */
-
-TabList.prototype.get = function (id) {
+Tablist.prototype.get = function (id) {
+	if (!this.tabs) return;
 	var found = $.grep(this.tabs, function (item) {
 		if (item) {
 			return item.id === id;
@@ -20,34 +12,66 @@ TabList.prototype.get = function (id) {
 	return found[0];
 };
 
-TabList.prototype.create = function (tab) {
+Tablist.prototype.add = function (tab) {
 	this.tabs.push(tab);
 };
 
-TabList.prototype.update = function (tabId, tab) {
-	var tabItem = TabList.prototype.get.call(this, tabId);
-	if (tabItem) {
-		var index = list.tabs.indexOf(tabItem);
-		list.tabs[index] = $.extend(tab,
-			{ 'el': template(tab) },
-			{ 'updated': new Date() }
-		);
-		TabList.prototype.sort.call(this);
-	}
+Tablist.prototype.getTimeAgo = function (tab) {
+	var now = new Date(),
+		diffMs = Math.abs((tab.updated || tab.created) - now);
+	return Math.round(((diffMs % 86400000) % 3600000) / 60000);
 };
 
-TabList.prototype.addTime = function (tabId) {
-	var tabItem = TabList.prototype.get.call(this, tabId),
-		now = new Date(),
-		diffMs = Math.abs(tabItem.updated - now),
-		diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+Tablist.prototype.suspendInactiveTabs = function () {
+	$.each(this.tabs, function (count, tab) {
+		var timeAgo = Tablist.prototype.getTimeAgo(tab);
+		if (tab.suspended) return false;
+		if (timeAgo > 5) {
+			chrome.tabs.get(tab.id, function (tabItem) {
+				if (chrome.runtime.lastError) {
+					return false;
+				}
+				else {
+					chrome.tabs.remove(tab.id);
+					$.extend(tab, { 'suspended': true });
+					Tablist.prototype.update(tab, { 'skipExtras': true });
+				}
+			});
+		}
+	});
+};
 
-	tabItem.time_ago = (diffMins > 1) ? (diffMins + ' mins') : (diffMins + ' min');
+Tablist.prototype.addTime = function (tabId) {
+	var tabItem = Tablist.prototype.get.call(this, tabId),
+		timeAgo = Tablist.prototype.getTimeAgo.call(this, tabItem);
+
+	tabItem.time_ago = (timeAgo === 0) ? '' : ((timeAgo === 1) ? (timeAgo + ' min') : (timeAgo + ' mins'));
 	tabItem.el = template(tabItem);
 };
 
-TabList.prototype.remove = function (tabId, tab) {
-	var tabItem = TabList.prototype.get.call(this, tabId);
+Tablist.prototype.update = function (updatedTab, options) {
+	var tabItem = Tablist.prototype.get.call(this, updatedTab.id);
+
+	options = options || {};
+
+	if (tabItem) {
+		var index = list.tabs.indexOf(tabItem);
+		list.tabs[index] = $.extend(updatedTab,
+			{ 'el': template(updatedTab) },
+			{ 'updated': new Date() }
+		);
+
+		if (!options.skipExtras) {
+			Tablist.prototype.sort.call(this);
+			Tablist.prototype.suspendInactiveTabs.call(this);
+		}
+	}
+};
+
+// remove tab from chrome and the list
+Tablist.prototype.destroyTab = function (tabId, callback) {
+	var tabItem = Tablist.prototype.get.call(this, tabId);
+
 	if (tabItem) {
 		var index = list.tabs.indexOf(tabItem);
 		delete list.tabs[index];
@@ -55,17 +79,21 @@ TabList.prototype.remove = function (tabId, tab) {
 		list.tabs = $.grep(list.tabs, function (item) {
 			return (item === 0) || item;
 		});
+
+		chrome.tabs.get(tabId, function (tab) {
+			chrome.tabs.remove(tab.id, callback);
+		});
 	}
 };
 
-TabList.prototype.sort = function () {
+Tablist.prototype.sort = function () {
 	function sortByDate(a, b) {
 		return  (b.updated || b.created) - (a.updated || a.created);
 	}
 	return this.tabs.sort(sortByDate);
 };
 
-var list = new TabList();
+var list = new Tablist();
 
 function buildFaviconUrl (url) {
 	var urlStr = url.split('/'),
@@ -76,7 +104,9 @@ function buildFaviconUrl (url) {
 }
 
 function template (data) {
-	var faviconUrl;
+	var faviconUrl,
+		suspendedClass = data.suspended ? 'suspended': '';
+
 	if (!data.favIconUrl) {
 		if (data.url) {
 			faviconUrl = buildFaviconUrl(data.url);
@@ -86,34 +116,32 @@ function template (data) {
 		faviconUrl = data.favIconUrl;
 	}
 
-	return '<li id="' + data.id + '">' +
+	return '<li id="' + data.id + '" class="' + suspendedClass + '">' +
 		'<span class="favicon"><img src="' + faviconUrl + '" /></span>' +
 		'<span class="title">' +
 		'<a href="#" class="js-title">' + data.title + '</a>' +
 		'</span>' +
-		'<div class="hover-panel">' +
-			'<a href="#" class="js-activate"> Activate </a>' +
-			'<a href="#" class="js-close-tab close-tab"> Close</a>' +
-			'<a href="#" class="js-pin pin-tab"> Pin</a>' +
-		'</div>' +
 		'<span class="time-ago">' + data.time_ago + '</span>' +
+		'<a href="#" class="js-close-tab close-tab">⊗</a>' +
+		'<a href="#" class="js-pin pin-tab">®</a>' +
+		'<a href="#" class="js-suspend suspend-tab">∗</a>' +
 	'</li>';
 }
 
-function TabItem (attrs) {
+function Tab (attrs) {
 	this.attrs = attrs;
 	this.id = attrs.id;
 	this.created = new Date();
 	this.el = template(attrs);
 }
 
-function onTabUpdated (tabId, tab) {
-	if (!list.get(tabId)) {
-		var item = new TabItem(tab);
-		list.create(item);
+function onTabUpdated (tab) {
+	if (!list.get(tab.id)) {
+		var item = new Tab(tab);
+		list.add(item);
 	}
 	else {
-		list.update(tabId, tab);
+		list.update(tab);
 	}
 }
 
@@ -121,29 +149,30 @@ chrome.tabs.onHighlighted.addListener(function (info) {
 	var self = this;
 	$.each(info.tabIds, function (index, tabId) {
 		chrome.tabs.get(tabId, function (tab) {
-			onTabUpdated.call(self, tab.id, tab);
+			onTabUpdated.call(self, tab);
 		});
 	});
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, change, tab) {
-	onTabUpdated.call(this, tabId, tab);
+	onTabUpdated.call(this, tab);
 });
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 	chrome.tabs.get(activeInfo.tabId, function (tab) {
-		onTabUpdated.call(this, tab.id, tab);
+		onTabUpdated.call(this, tab);
 	});
 });
 
 // listen for updates to cached pages
 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-	list.remove(removedTabId);
+	//list.remove(removedTabId);
 	chrome.tabs.get(addedTabId, function (tab) {
-		onTabUpdated.call(this, tab.id, tab);
+		onTabUpdated.call(this, tab);
 	});
 });
 
+/*
 chrome.tabs.onRemoved.addListener(function (tabId, tab) {
-	list.remove(tabId);
-});
+	list.removeTab(tabId);
+}); */
