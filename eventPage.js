@@ -122,9 +122,9 @@ function template (data) {
 		'<a href="#" class="js-title">' + data.title + '</a>' +
 		'</span>' +
 		'<span class="time-ago">' + data.time_ago + '</span>' +
-		'<a href="#" class="js-close-tab close-tab">⊗</a>' +
-		'<a href="#" class="js-pin pin-tab">®</a>' +
-		'<a href="#" class="js-suspend suspend-tab">∗</a>' +
+		'<a href="#" class="js-close-tab close-tab" title="Suspend tab"><img src="' + chrome.extension.getURL('images/bin.png') + '" /></a>' +
+		'<a href="#" class="js-pin pin-tab" title="Pin tab"><img src="' + chrome.extension.getURL('images/pin.png') + '"/></a>' +
+		'<a href="#" class="js-suspend suspend-tab" class="Remove tab"><img src="' + chrome.extension.getURL('images/close.png') + '"/></a>' +
 	'</li>';
 }
 

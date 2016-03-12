@@ -13,10 +13,11 @@ ul li a {
 
 ul li {
 	position: relative;
-	padding: 15px 60px 15px 15px;
+	padding: 20px 120px 20px 15px;
 	margin: 0;
 	background-color: #150385;
 	border-bottom: 1px solid rgba(255,255,255,0.25);
+	min-height: 35px;
 }
 
 ul li:nth-child(1) {
@@ -74,20 +75,35 @@ fieldset {
 	border: none;
 }
 
+input {
+	width: 200px;
+}
+
 .title {
 	display: inline-block;
 	padding: 0 0 0 40px;
 }
 
 .suspended .title a {
-	color: rgba(255,255,255,0.75);
+	color: rgba(255,255,255,0.65);
+}
+
+.suspended .time-ago {
+	color: rgba(255,255,255,0.65);
+}
+
+.suspended .close-tab,
+.suspended .pin-tab,
+.suspended .suspend-tab {
+	opacity: 0.65;
 }
 
 .time-ago {
-	color: rgba(255,255,255,0.65);
+	color: #FFF;
 	position: absolute;
 	right: 10px;
 	bottom: 5px;
+	opacity: 0.9;
 }
 
 .filter-hidden {
@@ -105,16 +121,21 @@ fieldset {
 .suspend-tab {
 	font-size: 18px;
 	position: absolute;
-	top: 5px;
+	top: 30px;
 	right: 8px;
 }
 
+.close-tab {
+	right: 50px;
+}
+
 .pin-tab {
-	right: 35px;
+	right: 80px;
+	top: 32px;
 }
 
 .suspend-tab {
-	right: 65px;
+	right: 120px;
 }
 
 .suspend {
