@@ -1,15 +1,15 @@
 var $list = $('.js-tabs-list'),
 	FILTER_HIDE_CLASS = 'filter-hidden',
 	SELECTED_CLASS = 'selected',
-    keys = {
-			'BACKSPACE_KEY': 8,
-      'ENTER_KEY': 13,
-      'DOWN_KEY': 40,
-      'UP_KEY': 38,
-      'ESCAPE_KEY': 27
-    },
-    list,
-    radix = 10;
+	keys = {
+		'BACKSPACE_KEY': 8,
+		'ENTER_KEY': 13,
+		'DOWN_KEY': 40,
+		'UP_KEY': 38,
+		'ESCAPE_KEY': 27
+	},
+	list,
+	radix = 10;
 
 function onRemoveTabClick (event) {
 	var $this = $(event.target),
@@ -24,7 +24,7 @@ function onRemoveTabClick (event) {
 
 	list.destroyTab(id, function () {
 		$list.find('#' + id).remove();
-  });
+	});
 }
 
 function onPinClick (event) {
@@ -77,11 +77,12 @@ function createTab (tab) {
 }
 
 function onTitleClick (event) {
-	event.preventDefault();
-	event.stopPropagation();
 	var $this = $(event.target),
 		id = parseInt($this.closest('li').attr('id'), 10),
 		tab;
+
+	event.preventDefault();
+	event.stopPropagation();
 
 	if (!$this.closest('a').hasClass('js-title')) {
 		return false;
@@ -108,30 +109,30 @@ function moveSelection (direction) {
 		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
 
 	$visibleList.eq(selectedIndex).removeClass(SELECTED_CLASS);
-    $visibleList.eq(newIndex).addClass(SELECTED_CLASS);
+	$visibleList.eq(newIndex).addClass(SELECTED_CLASS);
 }
 
 function onFilterKeyup (event) {
 	var $this = $(event.target),
 		query = $this.val(),
-        upKey = (event.keyCode === keys.UP_KEY),
-        downKey = (event.keyCode === keys.DOWN_KEY),
-        enterKey = (event.keyCode === keys.ENTER_KEY);
+		upKey = (event.keyCode === keys.UP_KEY),
+		downKey = (event.keyCode === keys.DOWN_KEY),
+		enterKey = (event.keyCode === keys.ENTER_KEY);
 
 	event.preventDefault();
-	event.stopPropagation();
+		event.stopPropagation();
 
-    if (upKey) {
-			moveSelection('up');
-    }
+	if (upKey) {
+		moveSelection('up');
+	}
 
-    if (downKey) {
-			moveSelection('down');
-    }
+	if (downKey) {
+		moveSelection('down');
+	}
 
-    if (enterKey) {
-			$list.find('.' + SELECTED_CLASS + ' .js-title')[0].click();
-    }
+	if (enterKey) {
+		$list.find('.' + SELECTED_CLASS + ' .js-title')[0].click();
+	}
 
 	$list.find('li').each(function () {
 		var $this = $(this),
