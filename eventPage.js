@@ -1,3 +1,5 @@
+var list;
+
 function Tablist () {
 	this.tabs = [];
 }
@@ -23,18 +25,24 @@ Tablist.prototype.getTimeAgo = function (tab) {
 };
 
 Tablist.prototype.suspendInactiveTabs = function () {
+	var self = this;
 	$.each(this.tabs, function (count, tab) {
-		var timeAgo = Tablist.prototype.getTimeAgo(tab);
+		var timeAgo = Tablist.prototype.getTimeAgo(tab),
+			storeTab = tab;
+
 		if (tab.suspended) return false;
-		if (timeAgo > 5) {
+		if (tab.pinned) return false;
+
+		if (timeAgo > 1) {
 			chrome.tabs.get(tab.id, function (tabItem) {
 				if (chrome.runtime.lastError) {
 					return false;
 				}
 				else {
-					chrome.tabs.remove(tab.id);
-					$.extend(tab, { 'suspended': true });
-					Tablist.prototype.update(tab, { 'skipExtras': true });
+					chrome.tabs.remove(tab.id, function () {
+						self.tabs.push(storeTab);
+						Tablist.prototype.set.call(self, tab.id, { 'suspended': true });
+					});
 				}
 			});
 		}
@@ -49,6 +57,14 @@ Tablist.prototype.addTime = function (tabId) {
 	tabItem.el = template(tabItem);
 };
 
+Tablist.prototype.set = function (tabId, newAttrs) {
+	var tabItem = Tablist.prototype.get.call(this, tabId);
+	if (tabItem) {
+		var index = list.tabs.indexOf(tabItem);
+		$.extend(list.tabs[index], newAttrs);
+	}
+};
+
 Tablist.prototype.update = function (updatedTab, options) {
 	var tabItem = Tablist.prototype.get.call(this, updatedTab.id);
 
@@ -61,7 +77,7 @@ Tablist.prototype.update = function (updatedTab, options) {
 			{ 'updated': new Date() }
 		);
 
-		if (!options.skipExtras) {
+		if (!options.ignoreExtraActions) {
 			Tablist.prototype.sort.call(this);
 			Tablist.prototype.suspendInactiveTabs.call(this);
 		}
@@ -81,7 +97,14 @@ Tablist.prototype.destroyTab = function (tabId, callback) {
 		});
 
 		chrome.tabs.get(tabId, function (tab) {
-			chrome.tabs.remove(tab.id, callback);
+			if (chrome.runtime.lastError) {
+				if (callback) {
+					callback();
+				}
+			}
+			else {
+				chrome.tabs.remove(tab.id, callback);
+			}
 		});
 	}
 };
@@ -93,7 +116,7 @@ Tablist.prototype.sort = function () {
 	return this.tabs.sort(sortByDate);
 };
 
-var list = new Tablist();
+list = new Tablist();
 
 function buildFaviconUrl (url) {
 	var urlStr = url.split('/'),
@@ -122,9 +145,9 @@ function template (data) {
 		'<a href="#" class="js-title">' + data.title + '</a>' +
 		'</span>' +
 		'<span class="time-ago">' + data.time_ago + '</span>' +
-		'<a href="#" class="js-close-tab close-tab" title="Suspend tab"><img src="' + chrome.extension.getURL('images/bin.png') + '" /></a>' +
-		'<a href="#" class="js-pin pin-tab" title="Pin tab"><img src="' + chrome.extension.getURL('images/pin.png') + '"/></a>' +
-		'<a href="#" class="js-suspend suspend-tab" class="Remove tab"><img src="' + chrome.extension.getURL('images/close.png') + '"/></a>' +
+		'<a href="#" class="js-close-tab close-tab"><img src="' + chrome.extension.getURL('images/bin.png') + '" title="Close tab" /></a>' +
+		'<a href="#" class="js-pin pin-tab"><img src="' + chrome.extension.getURL('images/pin.png') + '" title="Pin tab" /></a>' +
+		'<a href="#" class="js-suspend suspend-tab"><img src="' + chrome.extension.getURL('images/suspend.png') + '" title="Suspend tab" /></a>' +
 	'</li>';
 }
 
@@ -164,15 +187,13 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 	});
 });
 
-// listen for updates to cached pages
 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-	//list.remove(removedTabId);
+	list.destroyTab(removedTabId);
 	chrome.tabs.get(addedTabId, function (tab) {
 		onTabUpdated.call(this, tab);
 	});
 });
 
-/*
 chrome.tabs.onRemoved.addListener(function (tabId, tab) {
-	list.removeTab(tabId);
-}); */
+	list.destroyTab(tabId);
+});

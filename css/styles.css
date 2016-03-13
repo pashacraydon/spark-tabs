@@ -144,6 +144,7 @@ input {
 
 img {
 	max-width: 25px;
+	max-height: 20px;
 	position: absolute;
 	left: 15px;
 	top: 50%;

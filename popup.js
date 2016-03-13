@@ -2,7 +2,7 @@ var $list = $('.js-tabs-list'),
 	FILTER_HIDE_CLASS = 'filter-hidden',
 	SELECTED_CLASS = 'selected',
     keys = {
-      'BACKSPACE_KEY': 8,
+			'BACKSPACE_KEY': 8,
       'ENTER_KEY': 13,
       'DOWN_KEY': 40,
       'UP_KEY': 38,
@@ -18,20 +18,13 @@ function onRemoveTabClick (event) {
 	event.preventDefault();
 	event.stopPropagation();
 
-	if (!$this.hasClass('js-close-tab')) {
+	if (!$this.closest('a').hasClass('js-close-tab')) {
 		return;
 	}
 
-	chrome.tabs.get(id, function (tabItem) {
-		if (chrome.runtime.lastError) {
-			$list.find('#' + id).remove();
-		}
-		else {
-			list.destroyTab(id, function () {
-				$list.find('#' + id).remove();
-			});
-		}
-	});
+	list.destroyTab(id, function () {
+		$list.find('#' + id).remove();
+  });
 }
 
 function onPinClick (event) {
@@ -41,11 +34,36 @@ function onPinClick (event) {
 	event.preventDefault();
 	event.stopPropagation();
 
-	if (!$this.hasClass('js-pin')) {
+	if (!$this.closest('a').hasClass('js-pin')) {
 		return;
 	}
 
 	chrome.tabs.update(id, { 'pinned': true });
+}
+
+function onSuspendClick (event) {
+	var $this = $(event.target),
+		id = parseInt($this.closest('li').attr('id'), 10);
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (!$this.closest('a').hasClass('js-suspend')) {
+		return;
+	}
+
+	/*
+		Get the tab first so we can add it back
+		to the list after it has been removed.
+	*/
+	chrome.tabs.get(id, function (tab) {
+		chrome.tabs.remove(id, function () {
+			list.add(tab);
+			list.update(tab, { 'ignoreExtraActions' : true });
+			list.set(tab.id, { 'suspended': true });
+			$this.closest('li').addClass('suspended');
+		});
+	});
 }
 
 function createTab (tab) {
@@ -65,7 +83,7 @@ function onTitleClick (event) {
 		id = parseInt($this.closest('li').attr('id'), 10),
 		tab;
 
-	if (!$this.hasClass('js-title')) {
+	if (!$this.closest('a').hasClass('js-title')) {
 		return false;
 	}
 
@@ -104,15 +122,15 @@ function onFilterKeyup (event) {
 	event.stopPropagation();
 
     if (upKey) {
-		moveSelection('up');
+			moveSelection('up');
     }
 
     if (downKey) {
-		moveSelection('down');
+			moveSelection('down');
     }
 
     if (enterKey) {
-    	$list.find('.' + SELECTED_CLASS + ' .js-title')[0].click();
+			$list.find('.' + SELECTED_CLASS + ' .js-title')[0].click();
     }
 
 	$list.find('li').each(function () {
@@ -134,6 +152,7 @@ function updateInterface (list) {
 		deferred = $.Deferred();
 
 	$.each(list.tabs, function (count, tab) {
+		if (!tab) return;
 		if (tab.title !== "New Tab") {
 			list.addTime(tab.id);
 			buildList += tab.el;
@@ -155,6 +174,7 @@ chrome.runtime.getBackgroundPage(function (eventsPage) {
 		$list.on('click', '.js-close-tab', onRemoveTabClick);
 		$list.on('click', '.js-title', onTitleClick);
 		$list.on('click', '.js-pin', onPinClick);
+		$list.on('click', '.js-suspend', onSuspendClick);
 		$('[type="search"]').on('keyup', onFilterKeyup);
 	});
 });
