@@ -9,6 +9,9 @@ var $list = $('.js-tabs-list'),
 		'ESCAPE_KEY': 27
 	},
 	list,
+	$el = $('body'),
+	$suspendSelect = $el.find('.select-suspend select'),
+	$filter = $el.find('[type="search"]'),
 	radix = 10;
 
 function onRemoveTabClick (event) {
@@ -120,7 +123,7 @@ function onFilterKeyup (event) {
 		enterKey = (event.keyCode === keys.ENTER_KEY);
 
 	event.preventDefault();
-		event.stopPropagation();
+	event.stopPropagation();
 
 	if (upKey) {
 		moveSelection('up');
@@ -148,6 +151,16 @@ function onFilterKeyup (event) {
 	});
 }
 
+function onSuspendSelectChange (event) {
+	var $this = $(event.target),
+		newSuspendValue = ($this.val() === "never") ? $this.val() : parseInt($this.val(), radix);
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	chrome.storage.sync.set({'suspendAfterMins': newSuspendValue});
+}
+
 function updateInterface (list) {
 	var buildList = '',
 		deferred = $.Deferred();
@@ -169,6 +182,12 @@ function updateInterface (list) {
 
 chrome.runtime.getBackgroundPage(function (eventsPage) {
 	list = eventsPage.list;
+
+	chrome.storage.sync.get('suspendAfterMins', function (items) {
+		var suspendAfter = items.suspendAfterMins || eventsPage.SUSPEND_AFTER_MINS_DEFAULT;
+		$suspendSelect.val(suspendAfter).attr('selected', true);
+	});
+
 	updateInterface(eventsPage.list).done(function (buildList) {
 		$list.html(buildList);
 		$list.find('li:first').addClass(SELECTED_CLASS);
@@ -176,7 +195,8 @@ chrome.runtime.getBackgroundPage(function (eventsPage) {
 		$list.on('click', '.js-title', onTitleClick);
 		$list.on('click', '.js-pin', onPinClick);
 		$list.on('click', '.js-suspend', onSuspendClick);
-		$('[type="search"]').on('keyup', onFilterKeyup);
+		$filter.on('keyup', onFilterKeyup);
+		$suspendSelect.on('change', onSuspendSelectChange);
 	});
 });
 

@@ -71,16 +71,12 @@ ul li.tab-item a {
 	font-weight: 200;
 }
 
-ul.links {
-
-}
-
 fieldset {
 	border: none;
 }
 
 input {
-	width: 200px;
+	width: 180px;
 }
 
 .title {

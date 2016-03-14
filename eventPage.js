@@ -1,4 +1,5 @@
-var list;
+var list,
+	SUSPEND_AFTER_MINS_DEFAULT = 20;
 
 function buildFaviconUrl (url) {
 	var urlStr = url.split('/'),
@@ -12,6 +13,10 @@ function Tablist () {
 	this.tabs = [];
 	// history of active tab id's
 	this.history = [];
+
+	this.settings = {
+		'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT
+	};
 }
 
 // @param {number} tab id, return the tab from it's id
@@ -42,8 +47,9 @@ Tablist.prototype.suspendInactiveTabs = function () {
 
 		if (tab.suspended) return false;
 		if (tab.pinned) return false;
+		if (self.settings.suspendAfterMins === "never") return false;
 
-		if (timeAgo > 1) {
+		if (timeAgo > self.settings.suspendAfterMins) {
 			chrome.tabs.get(tab.id, function (tabItem) {
 				if (chrome.runtime.lastError) {
 					return false;
@@ -223,3 +229,8 @@ chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
 chrome.tabs.onRemoved.addListener(function (tabId, tab) {
 	list.destroyTab(tabId);
 });
+
+chrome.storage.onChanged.addListener(function (changes, areaName) {
+	list.settings.suspendAfterMins = changes.suspendAfterMins.newValue;
+});
+
