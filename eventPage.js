@@ -1,16 +1,26 @@
 var list;
 
-function Tablist () {
-	this.tabs = [];
+function buildFaviconUrl (url) {
+	var urlStr = url.split('/'),
+		urlArr = [];
+	urlArr.push(urlStr[0]);
+	urlArr.push(urlStr[2]);
+	return urlArr.join('//') + '/favicon.ico';
 }
 
+function Tablist () {
+	this.tabs = [];
+	// history of active tab id's
+	this.history = [];
+}
+
+// @param {number} tab id, return the tab from it's id
 Tablist.prototype.get = function (id) {
 	if (!this.tabs) return;
 	var found = $.grep(this.tabs, function (item) {
-		if (item) {
-			return item.id === id;
-		}
+		return (item.id === id);
 	});
+
 	return found[0];
 };
 
@@ -39,9 +49,9 @@ Tablist.prototype.suspendInactiveTabs = function () {
 					return false;
 				}
 				else {
-					chrome.tabs.remove(tab.id, function () {
+					chrome.tabs.remove(tabItem.id, function () {
 						self.tabs.push(storeTab);
-						Tablist.prototype.set.call(self, tab.id, { 'suspended': true });
+						Tablist.prototype.set.call(self, tabItem.id, { 'suspended': true });
 					});
 				}
 			});
@@ -69,6 +79,15 @@ Tablist.prototype.update = function (updatedTab, options) {
 	var tabItem = Tablist.prototype.get.call(this, updatedTab.id);
 
 	options = options || {};
+
+	if (!updatedTab.favIconUrl) {
+		if (updatedTab.url) {
+			updatedTab.faviconRenderUrl = buildFaviconUrl(updatedTab.url);
+		}
+	}
+	else {
+		updatedTab.faviconRenderUrl = updatedTab.favIconUrl;
+	}
 
 	if (tabItem) {
 		var index = list.tabs.indexOf(tabItem);
@@ -118,36 +137,30 @@ Tablist.prototype.sort = function () {
 
 list = new Tablist();
 
-function buildFaviconUrl (url) {
-	var urlStr = url.split('/'),
-		urlArr = [];
-	urlArr.push(urlStr[0]);
-	urlArr.push(urlStr[2]);
-	return urlArr.join('//') + '/favicon.ico';
-}
-
 function template (data) {
-	var faviconUrl,
-		suspendedClass = data.suspended ? 'suspended': '';
+	var suspendedClass = data.suspended ? 'suspended': '',
+		suspendedLink = data.suspended ? '' :
+			'<a href="#" class="js-suspend suspend-tab">' +
+				'<img src="' + chrome.extension.getURL('images/suspend.png') + '" title="Suspend tab" />' +
+			'</a>',
+		pinnedLink = (data.pinned || data.suspended) ? '' :
+			'<a href="#" class="js-pin pin-tab">' +
+				'<img src="' + chrome.extension.getURL('images/pin.png') + '" title="Pin tab" />' +
+			'</a>';
 
-	if (!data.favIconUrl) {
-		if (data.url) {
-			faviconUrl = buildFaviconUrl(data.url);
-		}
-	}
-	else {
-		faviconUrl = data.favIconUrl;
-	}
-
-	return '<li id="' + data.id + '" class="' + suspendedClass + '">' +
-		'<span class="favicon"><img src="' + faviconUrl + '" /></span>' +
+	return '<li id="' + data.id + '" class="' + suspendedClass + ' tab-item">' +
+		'<span class="favicon"><img class="favicon" src="' + data.faviconRenderUrl + '" /></span>' +
 		'<span class="title">' +
 		'<a href="#" class="js-title">' + data.title + '</a>' +
 		'</span>' +
 		'<span class="time-ago">' + data.time_ago + '</span>' +
-		'<a href="#" class="js-close-tab close-tab"><img src="' + chrome.extension.getURL('images/bin.png') + '" title="Close tab" /></a>' +
-		'<a href="#" class="js-pin pin-tab"><img src="' + chrome.extension.getURL('images/pin.png') + '" title="Pin tab" /></a>' +
-		'<a href="#" class="js-suspend suspend-tab"><img src="' + chrome.extension.getURL('images/suspend.png') + '" title="Suspend tab" /></a>' +
+		'<ul class="link-options">' +
+			'<li><a href="#" class="js-close-tab close-tab">' +
+				'<img src="' + chrome.extension.getURL('images/bin.png') + '" title="Close tab" />' +
+			'</a></li>' +
+			'<li>' + pinnedLink + '</li>' +
+			'<li>' + suspendedLink + '</li>' +
+		'</ul>' +
 	'</li>';
 }
 
@@ -167,6 +180,19 @@ function onTabUpdated (tab) {
 		list.update(tab);
 	}
 }
+
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+	list.history.push(activeInfo.tabId);
+	var prevTabIndex = (list.history.length === 1) ? (list.history.length - 1) : (list.history.length - 2),
+		prevTabId = list.history[prevTabIndex];
+
+	setTimeout(function () {
+		var prevActiveTab = list.get(prevTabId);
+		if (prevActiveTab) {
+			list.set(prevActiveTab.id, { 'updated': new Date() });
+		}
+	}, 200);
+});
 
 chrome.tabs.onHighlighted.addListener(function (info) {
 	var self = this;

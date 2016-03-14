@@ -13,7 +13,7 @@ var $list = $('.js-tabs-list'),
 
 function onRemoveTabClick (event) {
 	var $this = $(event.target),
-		id = parseInt($this.closest('li').attr('id'), radix);
+		id = parseInt($this.closest('li.tab-item').attr('id'), radix);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -29,7 +29,7 @@ function onRemoveTabClick (event) {
 
 function onPinClick (event) {
 	var $this = $(event.target),
-		id = parseInt($this.closest('li').attr('id'), 10);
+		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -43,7 +43,7 @@ function onPinClick (event) {
 
 function onSuspendClick (event) {
 	var $this = $(event.target),
-		id = parseInt($this.closest('li').attr('id'), 10);
+		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -60,7 +60,7 @@ function onSuspendClick (event) {
 		chrome.tabs.remove(id, function () {
 			list.add(tab);
 			list.update(tab, { 'ignoreExtraActions' : true });
-			list.set(tab.id, { 'suspended': true });
+			list.set(tab.id, { 'suspended': true, 'pinned': false });
 			$this.closest('li').addClass('suspended');
 		});
 	});
@@ -78,7 +78,7 @@ function createTab (tab) {
 
 function onTitleClick (event) {
 	var $this = $(event.target),
-		id = parseInt($this.closest('li').attr('id'), 10),
+		id = parseInt($this.closest('li.tab-item').attr('id'), 10),
 		tab;
 
 	event.preventDefault();
@@ -104,7 +104,7 @@ function onTitleClick (event) {
 
 function moveSelection (direction) {
 	var $selected = $list.find('.selected:first'),
-		$visibleList = $list.find('li').filter(':not(.' + FILTER_HIDE_CLASS + ')'),
+		$visibleList = $list.find('li.tab-item').filter(':not(.' + FILTER_HIDE_CLASS + ')'),
 		selectedIndex = $visibleList.index($selected),
 		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
 
