@@ -1,18 +1,14 @@
-var $list = $('.js-tabs-list'),
-	FILTER_HIDE_CLASS = 'filter-hidden',
-	SELECTED_CLASS = 'selected',
-	keys = {
-		'BACKSPACE_KEY': 8,
-		'ENTER_KEY': 13,
-		'DOWN_KEY': 40,
-		'UP_KEY': 38,
-		'ESCAPE_KEY': 27
-	},
-	list,
-	$el = $('body'),
-	$suspendSelect = $el.find('.select-suspend select'),
-	$filter = $el.find('[type="search"]'),
-	radix = 10;
+'use strict';
+
+import $ from '../lib/jquery-2.1.1.js';
+import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS } from 'constants.js';
+
+let $list = $('.js-tabs-list');
+const $el = $('body');
+
+let list;
+let $suspendSelect = $el.find('.select-suspend select');
+let $filter = $el.find('[type="search"]');
 
 function onRemoveTabClick (event) {
 	var $this = $(event.target),
@@ -184,7 +180,7 @@ chrome.runtime.getBackgroundPage(function (eventsPage) {
 	list = eventsPage.list;
 
 	chrome.storage.sync.get('suspendAfterMins', function (items) {
-		var suspendAfter = items.suspendAfterMins || eventsPage.SUSPEND_AFTER_MINS_DEFAULT;
+		var suspendAfter = (items.suspendAfterMins || eventsPage.SUSPEND_AFTER_MINS_DEFAULT);
 		$suspendSelect.val(suspendAfter).attr('selected', true);
 	});
 
