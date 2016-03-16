@@ -1,14 +1,11 @@
 'use strict';
 
-import $ from '../lib/jquery-2.1.1.js';
-import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS } from 'constants.js';
-
-let $list = $('.js-tabs-list');
-const $el = $('body');
+import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS, SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 let list;
-let $suspendSelect = $el.find('.select-suspend select');
-let $filter = $el.find('[type="search"]');
+let $list;
+let $suspendSelect;
+let $filter;
 
 function onRemoveTabClick (event) {
 	var $this = $(event.target),
@@ -158,41 +155,40 @@ function onSuspendSelectChange (event) {
 }
 
 function updateInterface (list) {
-	var buildList = '',
-		deferred = $.Deferred();
+	var buildList = '';
 
-	$.each(list.tabs, function (count, tab) {
+	_.each(list.tabs, function (tab) {
 		if (!tab) return;
 		if (tab.title !== "New Tab") {
 			list.addTime(tab.id);
 			buildList += tab.el;
 		}
-
-		if (count === (list.tabs.length - 1)) {
-			deferred.resolve(buildList);
-		}
 	});
 
-	return deferred.promise();
+	$list.html(buildList);
+	$list.find('li:first').addClass(SELECTED_CLASS);
+	$list.on('click', '.js-close-tab', onRemoveTabClick);
+	$list.on('click', '.js-title', onTitleClick);
+	$list.on('click', '.js-pin', onPinClick);
+	$list.on('click', '.js-suspend', onSuspendClick);
+	$filter.on('keyup', onFilterKeyup);
+	$suspendSelect.on('change', onSuspendSelectChange);
 }
 
-chrome.runtime.getBackgroundPage(function (eventsPage) {
-	list = eventsPage.list;
+chrome.runtime.getBackgroundPage(function (eventPage) {
+	list = eventPage.list;
 
-	chrome.storage.sync.get('suspendAfterMins', function (items) {
-		var suspendAfter = (items.suspendAfterMins || eventsPage.SUSPEND_AFTER_MINS_DEFAULT);
-		$suspendSelect.val(suspendAfter).attr('selected', true);
-	});
+	$(document).ready(function() {
+		$list = $('.js-tabs-list');
+		$suspendSelect = $('.select-suspend select');
+		$filter = $('[type="search"]');
 
-	updateInterface(eventsPage.list).done(function (buildList) {
-		$list.html(buildList);
-		$list.find('li:first').addClass(SELECTED_CLASS);
-		$list.on('click', '.js-close-tab', onRemoveTabClick);
-		$list.on('click', '.js-title', onTitleClick);
-		$list.on('click', '.js-pin', onPinClick);
-		$list.on('click', '.js-suspend', onSuspendClick);
-		$filter.on('keyup', onFilterKeyup);
-		$suspendSelect.on('change', onSuspendSelectChange);
+		chrome.storage.sync.get('suspendAfterMins', function (items) {
+			var suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
+			$suspendSelect.val(suspendAfter).attr('selected', true);
+		});
+
+		updateInterface(eventPage.list);
 	});
 });
 

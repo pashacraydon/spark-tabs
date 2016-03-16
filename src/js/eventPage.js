@@ -1,11 +1,11 @@
 'use strict';
 
 import Tablist from './Tablist';
-import $ from '../lib/jquery-2.1.1.js';
-import { template } from 'helpers.js';
-import { SUSPEND_AFTER_MINS_DEFAULT } from 'constants.js';
+import { template } from './helpers.js';
+import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
-let list = new Tablist();
+// chrome.runtime.getBackgroundPage pulls in the window object
+window.list = new Tablist();
 
 function Tab (attrs) {
 	this.attrs = attrs;

@@ -1,8 +1,7 @@
 'use strict';
 
-import $ from '../lib/jquery-2.1.1.js';
-import { buildFaviconUrl, template } from 'helpers.js';
-import { SUSPEND_AFTER_MINS_DEFAULT } from 'constants.js';
+import { buildFaviconUrl, template } from './helpers.js';
+import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 function Tablist () {
 	this.tabs = [];
@@ -135,3 +134,6 @@ Tablist.prototype.sort = function () {
 	}
 	return this.tabs.sort(sortByDate);
 };
+
+export default Tablist;
+
