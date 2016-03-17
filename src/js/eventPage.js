@@ -41,25 +41,25 @@ chrome.tabs.onHighlighted.addListener(function (info) {
 	var self = this;
 	$.each(info.tabIds, function (index, tabId) {
 		chrome.tabs.get(tabId, function (tab) {
-			onTabUpdated.call(self, tab);
+			onTabUpdated(tab);
 		});
 	});
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, change, tab) {
-	onTabUpdated.call(this, tab);
+	onTabUpdated(tab);
 });
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 	chrome.tabs.get(activeInfo.tabId, function (tab) {
-		onTabUpdated.call(this, tab);
+		onTabUpdated(tab);
 	});
 });
 
 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
 	list.destroyTab(removedTabId);
 	chrome.tabs.get(addedTabId, function (tab) {
-		onTabUpdated.call(this, tab);
+		onTabUpdated(tab);
 	});
 });
 
@@ -73,5 +73,15 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 
 chrome.storage.sync.get('suspendAfterMins', function (items) {
 	list.settings.suspendAfterMins = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
+});
+
+chrome.runtime.onInstalled.addListener(function (details) {
+	if (details.reason === "install") {
+		chrome.tabs.query({ 'currentWindow': true }, function (tabs) {
+			_.each(tabs, function (tab) {
+				onTabUpdated(tab);
+			});
+		});
+	}
 });
 

@@ -160,7 +160,6 @@ function updateInterface (list) {
 	_.each(list.tabs, function (tab) {
 		if (!tab) return;
 		if (tab.title !== "New Tab") {
-			list.addTime(tab.id);
 			buildList += tab.el;
 		}
 	});

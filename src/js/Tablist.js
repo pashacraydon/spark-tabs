@@ -27,12 +27,6 @@ Tablist.prototype.add = function (tab) {
 	this.tabs.push(tab);
 };
 
-Tablist.prototype.getTimeAgo = function (tab) {
-	var now = new Date(),
-		diffMs = Math.abs((tab.updated || tab.created) - now);
-	return Math.round(((diffMs % 86400000) % 3600000) / 60000);
-};
-
 Tablist.prototype.suspendInactiveTabs = function () {
 	var self = this;
 	$.each(this.tabs, function (count, tab) {
@@ -59,20 +53,25 @@ Tablist.prototype.suspendInactiveTabs = function () {
 	});
 };
 
-Tablist.prototype.addTime = function (tabId) {
-	var tabItem = Tablist.prototype.get.call(this, tabId),
-		timeAgo = Tablist.prototype.getTimeAgo.call(this, tabItem);
-
-	tabItem.time_ago = (timeAgo === 0) ? '' : ((timeAgo === 1) ? (timeAgo + ' min') : (timeAgo + ' mins'));
-	tabItem.el = template(tabItem);
-};
-
 Tablist.prototype.set = function (tabId, newAttrs) {
 	var tabItem = Tablist.prototype.get.call(this, tabId);
 	if (tabItem) {
 		var index = this.tabs.indexOf(tabItem);
 		$.extend(this.tabs[index], newAttrs);
 	}
+};
+
+Tablist.prototype.getTimeAgo = function (tab) {
+	var now = new Date(),
+		diffMs = Math.abs((tab.updated || tab.created) - now);
+	return Math.round(((diffMs % 86400000) % 3600000) / 60000);
+};
+
+Tablist.prototype.updateTimeAgo = function () {
+	$.each(this.tabs, function (count, tab) {
+		tab.time_ago = Tablist.prototype.getTimeAgo.call(this, tab);
+		tab.el = template(tab);
+	});
 };
 
 Tablist.prototype.update = function (updatedTab, options) {
@@ -89,6 +88,8 @@ Tablist.prototype.update = function (updatedTab, options) {
 		updatedTab.faviconRenderUrl = updatedTab.favIconUrl;
 	}
 
+	$.extend(updatedTab, tabItem);
+
 	if (tabItem) {
 		var index = this.tabs.indexOf(tabItem);
 		this.tabs[index] = $.extend(updatedTab,
@@ -97,6 +98,7 @@ Tablist.prototype.update = function (updatedTab, options) {
 		);
 
 		if (!options.ignoreExtraActions) {
+			Tablist.prototype.updateTimeAgo.call(this);
 			Tablist.prototype.sort.call(this);
 			Tablist.prototype.suspendInactiveTabs.call(this);
 		}
