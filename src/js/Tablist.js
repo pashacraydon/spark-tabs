@@ -3,82 +3,74 @@
 import { buildFaviconUrl, template } from './helpers.js';
 import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
-function Tab () {
-	this.created = new Date();
-}
 
-$.extend(Tab.prototype, {
-
-	'set': function (attrs) {
+class Tab {
+	constructor (attrs) {
 		$.extend(this, attrs);
+		this.created = new Date();
 		this.el = template(this);
 	}
-
-});
-
-function Tablist () {
-	this.tabs = [];
-	// history of active tab id's
-	this.history = [];
-
-	this.settings = {
-		'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT
-	};
 }
 
-$.extend(Tablist.prototype, {
 
-	'render': function () {
-		var self = this,
-			elements = '';
+class Tablist {
+	constructor () {
+		this.tabs = [];
+		this.history = [];
+		this.settings = {
+			'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT
+		};
+	}
+
+	render() {
+		let elements = '';
 
 		this.sort();
 
-		$.each(this.tabs, function (count, tab) {
+		$.each(this.tabs, (count, tab) => {
 			if (!tab) return;
-			tab.time_ago = self.getTimeAgo(tab);
+			tab.time_ago = this.getTimeAgo(tab);
 			tab.el = template(tab);
 			elements += tab.el;
 		});
 
 		return elements;
-	},
+	}
 
-	'get': function (id) {
+	get(id) {
 		if (!this.tabs) return;
-		var found = $.grep(this.tabs, function (item) {
+		let found = $.grep(this.tabs, (item) => {
 			return (item.id === id);
 		});
 
 		return found[0];
-	},
+	}
 
-	'add': function (tab) {
+	add(tab) {
 		this.tabs.push(tab);
-	},
+	}
 
-	'prevActiveTab': function (options) {
+	prevActiveTab(options) {
 		if (options.set) {
 			this.history.push(options.set);
 		}
 		else if (options.get) {
-			var prevTabIndex = (this.history.length === 1) ? (this.history.length - 1) : (this.history.length - 2),
+			let prevTabIndex = (this.history.length === 1) ? (this.history.length - 1) : (this.history.length - 2),
 				prevTabId = this.history[prevTabIndex];
 			return this.get(prevTabId);
 		}
-	},
+	}
 
-	'suspendCallback': function (tab) {
+	suspendCallback(tab) {
 		this.add(tab);
 		this.update(tab, { 'ignoreExtraActions' : true });
 		this.set(tab.id, { 'suspended': true, 'pinned': false });
-	},
+	}
 
-	'suspend': function (tab) {
-		var timeAgo = this.getTimeAgo(tab),
+	suspend(tab) {
+		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab({ 'get': true }),
-			storeTab = tab,
-			self = this;
+			storeTab = tab;
 
 		if (tab.suspended) return false;
 		if (tab.pinned) return false;
@@ -86,60 +78,59 @@ $.extend(Tablist.prototype, {
 		if (prevActiveTab) return false;
 
 		if (timeAgo >= this.settings.suspendAfterMins) {
-			chrome.tabs.get(tab.id, function (tabItem) {
+			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
 				}
 				else {
 					chrome.tabs.remove(tabItem.id, function () {
-						setTimeout(function () {
-							self.suspendCallback(tabItem);
+						setTimeout(() => {
+							this.suspendCallback(tabItem);
 						}, 300);
 					});
 				}
 			});
 		}
-	},
+	}
 
-	'set': function (tabId, newAttrs) {
-		var tabItem = this.get(tabId);
+	set(tabId, newAttrs) {
+		let tabItem = this.get(tabId);
 		if (tabItem) {
 			var index = this.tabs.indexOf(tabItem);
 			$.extend(this.tabs[index], newAttrs);
 		}
-	},
+	}
 
-	'getTimeAgo': function (tab) {
-		var now = new Date(),
+	getTimeAgo(tab) {
+		let now = new Date(),
 			diffMs = Math.abs((tab.updated || tab.created) - now);
 		return Math.round(((diffMs % 86400000) % 3600000) / 60000);
-	},
+	}
 
-	'buildFaviconUrl': function (tab) {
+	buildFaviconUrl(tab) {
 		if (tab.favIconUrl) {
 			return tab.favIconUrl;
 		}
 
 		if (tab.url) {
-			var urlStr = tab.url.split('/'),
+			let urlStr = tab.url.split('/'),
 				urlArr = [],
 				favUrl;
 			urlArr.push(urlStr[0]);
 			urlArr.push(urlStr[2]);
 			return urlArr.join('//') + '/favicon.ico';
 		}
-	},
+	}
 
-	'update': function (updatedTab, options) {
-		var tabItem = this.get(updatedTab.id),
-			self = this;
+	update(updatedTab, options) {
+		let tabItem = this.get(updatedTab.id);
 
 		options = options || {};
 
 		updatedTab.faviconRenderUrl = this.buildFaviconUrl(updatedTab);
 
 		if (tabItem) {
-			var index = this.tabs.indexOf(tabItem);
+			let index = this.tabs.indexOf(tabItem);
 			this.tabs[index] = $.extend(
 				tabItem,
 				updatedTab,
@@ -149,21 +140,21 @@ $.extend(Tablist.prototype, {
 			);
 
 			if (!options.ignoreExtraActions) {
-				$.each(this.tabs, function (count, tab) {
-					self.suspend(tab);
+				$.each(this.tabs, (count, tab) => {
+					this.suspend(tab);
 				});
 			}
 		}
-	},
+	}
 
-	'remove': function (tabId, callback) {
-		var tabItem = this.get(tabId);
+	remove(tabId, callback) {
+		let tabItem = this.get(tabId);
 
 		if (tabItem) {
 			var index = this.tabs.indexOf(tabItem);
 			delete this.tabs[index];
 			// remove empty array indexes
-			this.tabs = $.grep(this.tabs, function (item) {
+			this.tabs = $.grep(this.tabs, (item) => {
 				return (item === 0) || item;
 			});
 
@@ -178,16 +169,16 @@ $.extend(Tablist.prototype, {
 				}
 			});
 		}
-	},
+	}
 
-	'sort': function () {
+	sort() {
 		function sortByDate(a, b) {
 			return  (b.updated || b.created) - (a.updated || a.created);
 		}
 		this.tabs.sort(sortByDate);
 	}
 
-});
+}
 
 
 export { Tablist, Tab }

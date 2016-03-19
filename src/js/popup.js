@@ -8,7 +8,7 @@ let $suspendSelect;
 let $filter;
 
 function onRemoveTabClick (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		id = parseInt($this.closest('li.tab-item').attr('id'), radix);
 
 	event.preventDefault();
@@ -24,7 +24,7 @@ function onRemoveTabClick (event) {
 }
 
 function onPinClick (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
 
 	event.preventDefault();
@@ -40,7 +40,7 @@ function onPinClick (event) {
 }
 
 function onSuspendClick (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
 
 	event.preventDefault();
@@ -76,7 +76,7 @@ function createTab (tab) {
 }
 
 function onTitleClick (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		id = parseInt($this.closest('li.tab-item').attr('id'), 10),
 		tab;
 
@@ -102,7 +102,7 @@ function onTitleClick (event) {
 }
 
 function moveSelection (direction) {
-	var $selected = $list.find('.selected:first'),
+	let $selected = $list.find('.selected:first'),
 		$visibleList = $list.find('li.tab-item').filter(':not(.' + FILTER_HIDE_CLASS + ')'),
 		selectedIndex = $visibleList.index($selected),
 		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
@@ -112,7 +112,7 @@ function moveSelection (direction) {
 }
 
 function onFilterKeyup (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		query = $this.val(),
 		upKey = (event.keyCode === keys.UP_KEY),
 		downKey = (event.keyCode === keys.DOWN_KEY),
@@ -134,7 +134,7 @@ function onFilterKeyup (event) {
 	}
 
 	$list.find('li').each(function () {
-		var $this = $(this),
+		let $this = $(this),
 			text = $this.find('.title').text().toLowerCase(),
 			isMatch = (text.indexOf(query.toLowerCase()) !== -1);
 
@@ -148,7 +148,7 @@ function onFilterKeyup (event) {
 }
 
 function onSuspendSelectChange (event) {
-	var $this = $(event.target),
+	let $this = $(event.target),
 		newSuspendValue = ($this.val() === "never") ? $this.val() : parseInt($this.val(), radix);
 
 	event.preventDefault();
@@ -158,7 +158,7 @@ function onSuspendSelectChange (event) {
 }
 
 function updateInterface (list) {
-	var el = list.render();
+	let el = list.render();
 	$list.html(el);
 	$list.find('li:first').addClass(SELECTED_CLASS);
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
@@ -172,13 +172,13 @@ function updateInterface (list) {
 chrome.runtime.getBackgroundPage(function (eventPage) {
 	list = eventPage.list;
 
-	$(document).ready(function() {
+	$(document).ready(() => {
 		$list = $('.js-tabs-list');
 		$suspendSelect = $('.select-suspend select');
 		$filter = $('[type="search"]');
 
-		chrome.storage.sync.get('suspendAfterMins', function (items) {
-			var suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
+		chrome.storage.sync.get('suspendAfterMins', (items) => {
+			let suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
 			$suspendSelect.val(suspendAfter).attr('selected', true);
 		});
 
