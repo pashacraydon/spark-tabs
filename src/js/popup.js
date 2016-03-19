@@ -169,7 +169,7 @@ function updateInterface (list) {
 	$suspendSelect.on('change', onSuspendSelectChange);
 }
 
-chrome.runtime.getBackgroundPage(function (eventPage) {
+chrome.runtime.getBackgroundPage((eventPage) => {
 	list = eventPage.list;
 
 	$(document).ready(() => {

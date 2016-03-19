@@ -2,21 +2,17 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  context: __dirname + '/../src/js',
+  context: __dirname + '/../test',
 
   entry: {
-    eventpage: ['./eventPage.js'],
-    tablist: ['./Tablist.js'],
-    constants: ['./constants.js'],
-    helpers: ['./helpers.js'],
-    popup: ['./popup.js'],
+    testPopup: ['./testPopup.js'],
     common: [
       'jquery'
     ]
   },
 
   output: {
-    path: path.resolve(__dirname, '../build'),
+    path: path.resolve(__dirname, '../test/build'),
     pathinfo: true,
     filename: '[name].js',
     sourceMapFilename: '[name].map'

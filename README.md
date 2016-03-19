@@ -4,12 +4,20 @@ A Chrome extension to organize your tabs
 
 ## Features
 
+* Order tabs by recent activity with color-coded 'heat' gradient
 * Suspend tabs after set number of minutes
+* Filter tabs by keyword
+* Navigate tabs with keyboard shortcuts
 
 ## Dev
 
 * ```npm install -g gulp webpack```
 * ```npm install```
+
+## Tests
+
+* Run ```gulp test```
+* Visit http://localhost:8080/test/runner.html
 
 ## Running
 

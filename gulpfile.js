@@ -9,6 +9,8 @@ var replace = require('gulp-replace');
 var exec = require('child_process').exec;
 var mkdirp = require('mkdirp');
 var bump = require('gulp-bump');
+var mochaPhantomJS = require('gulp-mocha-phantomjs');
+var connect = require('gulp-connect');
 
 var getManifest = function () {
   var fs = require('fs');
@@ -101,7 +103,23 @@ gulp.task('build-dev', [], function (callback) {
 
     callback();
   });
+});
 
+gulp.task('build-test', [], function (callback) {
+  var config = require('./config/webpack.test.config.js');
+  var compiler = webpack(config);
+
+  compiler.run(function(err, stats) {
+    if (err) {
+      throw new gutil.PluginError('webpack-build', err);
+    }
+
+    gutil.log("[webpack:build-test]", stats.toString({
+      colors: true
+    }));
+
+    callback();
+  });
 });
 
 gulp.task('reload', function () {
@@ -126,12 +144,33 @@ gulp.task('watch-webpack', [], function (callback) {
   );
 });
 
+gulp.task('watch-webpack-test', [], function (callback) {
+  runSequence(
+    'build-test',
+    'reload',
+    callback
+  );
+});
+
+gulp.task('connect', function() {
+  gulp.src('./test/*.html')
+    .pipe(connect.server());
+});
+
 gulp.task('dev', ['static', 'build-dev', 'reload'], function () {
   gulp.watch(['src/*.json'], ['watch-static']);
   gulp.watch(['src/css/*.css'], ['watch-static']);
   gulp.watch(['src/assets/*.png'], ['watch-static']);
 
   gulp.watch(['src/js/*.js', 'src/views/*.html'], ['watch-webpack']);
+});
+
+gulp.task('test', ['build-test', 'reload', 'connect'], function () {
+  gulp.watch(['test/*.js'], ['watch-static']);
+  gulp.watch(['test/*.js'], ['watch-webpack-test']);
+    return gulp
+    .src('test/runner.html')
+    .pipe(mochaPhantomJS());
 });
 
 gulp.task('default', ['dev'])
