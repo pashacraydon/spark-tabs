@@ -18,7 +18,7 @@ function onRemoveTabClick (event) {
 		return;
 	}
 
-	list.destroyTab(id, function () {
+	list.remove(id, function () {
 		$list.find('#' + id).remove();
 	});
 }
@@ -69,7 +69,7 @@ function createTab (tab) {
 	chrome.tabs.create({
 		'url': tab.url
 	}, function () {
-		list.destroyTab(tab.id, function () {
+		list.remove(tab.id, function () {
 			$list.find('#' + tab.id).remove();
 		});
 	});

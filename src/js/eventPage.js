@@ -1,22 +1,19 @@
 'use strict';
 
-import Tablist from './Tablist';
+import { Tablist, Tab } from './Tablist';
 import { template } from './helpers.js';
 import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
 
-function Tab (attrs) {
-	this.attrs = attrs;
-	this.id = attrs.id;
-	this.created = new Date();
-	this.el = template(attrs);
-}
-
 function onTabUpdated (tab) {
+	if (tab.status === "loading") return false;
+	if (tab.title === "New Tab") return false;
+
 	if (!list.get(tab.id)) {
-		var item = new Tab(tab);
+		var item = new Tab();
+		item.set(tab);
 		list.add(item);
 	}
 	else {
@@ -25,12 +22,10 @@ function onTabUpdated (tab) {
 }
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-	list.history.push(activeInfo.tabId);
-	var prevTabIndex = (list.history.length === 1) ? (list.history.length - 1) : (list.history.length - 2),
-		prevTabId = list.history[prevTabIndex];
+	list.prevActiveTab({ 'set': activeInfo.tabId });
 
 	setTimeout(function () {
-		var prevActiveTab = list.get(prevTabId);
+		var prevActiveTab = list.prevActiveTab({ 'get': true });
 		if (prevActiveTab) {
 			list.set(prevActiveTab.id, { 'updated': new Date() });
 		}
@@ -58,14 +53,14 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 });
 
 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-	list.destroyTab(removedTabId);
+	list.remove(removedTabId);
 	chrome.tabs.get(addedTabId, function (tab) {
 		onTabUpdated(tab);
 	});
 });
 
 chrome.tabs.onRemoved.addListener(function (tabId, tab) {
-	list.destroyTab(tabId);
+	list.remove(tabId);
 });
 
 chrome.storage.onChanged.addListener(function (changes, areaName) {
@@ -79,7 +74,7 @@ chrome.storage.sync.get('suspendAfterMins', function (items) {
 chrome.runtime.onInstalled.addListener(function (details) {
 	if (details.reason === "install") {
 		chrome.tabs.query({ 'currentWindow': true }, function (tabs) {
-			_.each(tabs, function (tab) {
+			$.each(tabs, function (count, tab) {
 				onTabUpdated(tab);
 			});
 		});
