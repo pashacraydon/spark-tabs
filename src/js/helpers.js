@@ -1,13 +1,5 @@
 'use strict';
 
-function buildFaviconUrl (url) {
-	var urlStr = url.split('/'),
-		urlArr = [];
-	urlArr.push(urlStr[0]);
-	urlArr.push(urlStr[2]);
-	return urlArr.join('//') + '/favicon.ico';
-}
-
 function template (data) {
 	var suspendedClass = data.suspended ? 'suspended': '',
 		suspendedLink = data.suspended ? '' :
@@ -36,4 +28,4 @@ function template (data) {
 	'</li>';
 }
 
-export { buildFaviconUrl, template }
+export { template }

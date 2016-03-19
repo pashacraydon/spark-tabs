@@ -13,6 +13,24 @@ function Tablist () {
 	};
 }
 
+Tablist.prototype.render = function () {
+	var self = this,
+		elements = '';
+
+	Tablist.prototype.sort.call(this);
+
+	_.each(this.tabs, function (tab) {
+		if (!tab) return;
+		if (tab.el && tab.title !== "New Tab") {
+			tab.time_ago = Tablist.prototype.getTimeAgo(tab);
+			tab.el = template(tab);
+			elements += tab.el;
+		}
+	});
+
+	return elements;
+};
+
 // @param {number} tab id, return the tab from it's id
 Tablist.prototype.get = function (id) {
 	if (!this.tabs) return;
@@ -27,30 +45,28 @@ Tablist.prototype.add = function (tab) {
 	this.tabs.push(tab);
 };
 
-Tablist.prototype.suspendInactiveTabs = function () {
-	var self = this;
-	$.each(this.tabs, function (count, tab) {
-		var timeAgo = Tablist.prototype.getTimeAgo(tab),
-			storeTab = tab;
+Tablist.prototype.suspendInactiveTab = function (tab) {
+	var timeAgo = Tablist.prototype.getTimeAgo(tab),
+		storeTab = tab,
+		self = this;
 
-		if (tab.suspended) return false;
-		if (tab.pinned) return false;
-		if (self.settings.suspendAfterMins === "never") return false;
+	if (tab.suspended) return false;
+	if (tab.pinned) return false;
+	if (this.settings.suspendAfterMins === "never") return false;
 
-		if (timeAgo > self.settings.suspendAfterMins) {
-			chrome.tabs.get(tab.id, function (tabItem) {
-				if (chrome.runtime.lastError) {
-					return false;
-				}
-				else {
-					chrome.tabs.remove(tabItem.id, function () {
-						self.tabs.push(storeTab);
-						Tablist.prototype.set.call(self, tabItem.id, { 'suspended': true });
-					});
-				}
-			});
-		}
-	});
+	if (timeAgo > this.settings.suspendAfterMins) {
+		chrome.tabs.get(tab.id, function (tabItem) {
+			if (chrome.runtime.lastError) {
+				return false;
+			}
+			else {
+				chrome.tabs.remove(tabItem.id, function () {
+					self.tabs.push(storeTab);
+					Tablist.prototype.set.call(self, tabItem.id, { 'suspended': true });
+				});
+			}
+		});
+	}
 };
 
 Tablist.prototype.set = function (tabId, newAttrs) {
@@ -67,40 +83,47 @@ Tablist.prototype.getTimeAgo = function (tab) {
 	return Math.round(((diffMs % 86400000) % 3600000) / 60000);
 };
 
-Tablist.prototype.updateTimeAgo = function () {
+Tablist.prototype.onUpdate = function () {
+	var self = this;
 	$.each(this.tabs, function (count, tab) {
-		tab.time_ago = Tablist.prototype.getTimeAgo.call(this, tab);
-		tab.el = template(tab);
+		Tablist.prototype.suspendInactiveTab.call(self, tab);
 	});
-};
+},
+
+Tablist.prototype.buildFaviconUrl = function (tab) {
+	if (tab.favIconUrl) {
+		return tab.favIconUrl;
+	}
+
+	if (tab.url) {
+		var urlStr = tab.url.split('/'),
+			urlArr = [],
+			favUrl;
+		urlArr.push(urlStr[0]);
+		urlArr.push(urlStr[2]);
+		return urlArr.join('//') + '/favicon.ico';
+	}
+},
 
 Tablist.prototype.update = function (updatedTab, options) {
 	var tabItem = Tablist.prototype.get.call(this, updatedTab.id);
 
 	options = options || {};
 
-	if (!updatedTab.favIconUrl) {
-		if (updatedTab.url) {
-			updatedTab.faviconRenderUrl = buildFaviconUrl(updatedTab.url);
-		}
-	}
-	else {
-		updatedTab.faviconRenderUrl = updatedTab.favIconUrl;
-	}
-
-	$.extend(updatedTab, tabItem);
+	updatedTab.faviconRenderUrl = Tablist.prototype.buildFaviconUrl(updatedTab);
 
 	if (tabItem) {
 		var index = this.tabs.indexOf(tabItem);
-		this.tabs[index] = $.extend(updatedTab,
+		this.tabs[index] = $.extend(
+			tabItem,
+			updatedTab,
 			{ 'el': template(updatedTab) },
-			{ 'updated': new Date() }
+			{ 'updated': new Date() },
+			{ 'time_ago': 0 }
 		);
 
 		if (!options.ignoreExtraActions) {
-			Tablist.prototype.updateTimeAgo.call(this);
-			Tablist.prototype.sort.call(this);
-			Tablist.prototype.suspendInactiveTabs.call(this);
+			Tablist.prototype.onUpdate.call(this);
 		}
 	}
 };
@@ -134,7 +157,7 @@ Tablist.prototype.sort = function () {
 	function sortByDate(a, b) {
 		return  (b.updated || b.created) - (a.updated || a.created);
 	}
-	return this.tabs.sort(sortByDate);
+	this.tabs.sort(sortByDate);
 };
 
 export default Tablist;

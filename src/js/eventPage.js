@@ -34,11 +34,10 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 		if (prevActiveTab) {
 			list.set(prevActiveTab.id, { 'updated': new Date() });
 		}
-	}, 200);
+	}, 300);
 });
 
 chrome.tabs.onHighlighted.addListener(function (info) {
-	var self = this;
 	$.each(info.tabIds, function (index, tabId) {
 		chrome.tabs.get(tabId, function (tab) {
 			onTabUpdated(tab);
@@ -47,7 +46,9 @@ chrome.tabs.onHighlighted.addListener(function (info) {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, change, tab) {
-	onTabUpdated(tab);
+	if (change.status !== "loading") {
+		onTabUpdated(tab);
+	}
 });
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {

@@ -34,7 +34,9 @@ function onPinClick (event) {
 		return;
 	}
 
-	chrome.tabs.update(id, { 'pinned': true });
+	chrome.tabs.update(id, { 'pinned': true }, function () {
+		$this.closest('li').hide();
+	});
 }
 
 function onSuspendClick (event) {
@@ -49,15 +51,18 @@ function onSuspendClick (event) {
 	}
 
 	/*
-		Get the tab first so we can add it back
+		Because 'chrome.tabs.onRemoved' must destroy tabs,
+		we need to get the tab first so we can add it back
 		to the list after it has been removed.
 	*/
 	chrome.tabs.get(id, function (tab) {
 		chrome.tabs.remove(id, function () {
-			list.add(tab);
-			list.update(tab, { 'ignoreExtraActions' : true });
-			list.set(tab.id, { 'suspended': true, 'pinned': false });
-			$this.closest('li').addClass('suspended');
+			setTimeout(function () {
+				list.add(tab);
+				list.update(tab, { 'ignoreExtraActions' : true });
+				list.set(tab.id, { 'suspended': true, 'pinned': false });
+				$this.closest('li.tab-item').addClass('suspended');
+			}, 300);
 		});
 	});
 }
@@ -155,16 +160,8 @@ function onSuspendSelectChange (event) {
 }
 
 function updateInterface (list) {
-	var buildList = '';
-
-	_.each(list.tabs, function (tab) {
-		if (!tab) return;
-		if (tab.title !== "New Tab") {
-			buildList += tab.el;
-		}
-	});
-
-	$list.html(buildList);
+	var el = list.render();
+	$list.html(el);
 	$list.find('li:first').addClass(SELECTED_CLASS);
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
 	$list.on('click', '.js-title', onTitleClick);
