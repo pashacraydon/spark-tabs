@@ -58,9 +58,7 @@ function onSuspendClick (event) {
 	chrome.tabs.get(id, function (tab) {
 		chrome.tabs.remove(id, function () {
 			setTimeout(function () {
-				list.add(tab);
-				list.update(tab, { 'ignoreExtraActions' : true });
-				list.set(tab.id, { 'suspended': true, 'pinned': false });
+				list.suspendCallback(tab);
 				$this.closest('li.tab-item').addClass('suspended');
 			}, 300);
 		});

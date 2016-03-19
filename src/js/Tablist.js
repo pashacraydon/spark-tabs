@@ -45,6 +45,12 @@ Tablist.prototype.add = function (tab) {
 	this.tabs.push(tab);
 };
 
+Tablist.prototype.suspendCallback = function (tab) {
+	Tablist.prototype.add.call(this, tab);
+	Tablist.prototype.update.call(this, tab, { 'ignoreExtraActions' : true });
+	Tablist.prototype.set.call(this, tab.id, { 'suspended': true, 'pinned': false });
+};
+
 Tablist.prototype.suspendInactiveTab = function (tab) {
 	var timeAgo = Tablist.prototype.getTimeAgo(tab),
 		storeTab = tab,
@@ -54,15 +60,16 @@ Tablist.prototype.suspendInactiveTab = function (tab) {
 	if (tab.pinned) return false;
 	if (this.settings.suspendAfterMins === "never") return false;
 
-	if (timeAgo > this.settings.suspendAfterMins) {
+	if (timeAgo >  this.settings.suspendAfterMins) {
 		chrome.tabs.get(tab.id, function (tabItem) {
 			if (chrome.runtime.lastError) {
 				return false;
 			}
 			else {
 				chrome.tabs.remove(tabItem.id, function () {
-					self.tabs.push(storeTab);
-					Tablist.prototype.set.call(self, tabItem.id, { 'suspended': true });
+					setTimeout(function () {
+						Tablist.prototype.suspendCallback.call(self, tabItem);
+					}, 300);
 				});
 			}
 		});
