@@ -16,8 +16,8 @@ A Chrome extension to organize your tabs
 
 ## Tests
 
-* Run ```gulp test```
-* Visit http://localhost:8080/test/runner.html
+* Run ```gulp test``` , this will autocompile test files on changes
+* Run ```gulp connect``` to run a mocha server, then visit http://localhost:8080/test/runner.html
 
 ## Running
 

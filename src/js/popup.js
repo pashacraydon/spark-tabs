@@ -166,7 +166,7 @@ function updateInterface (list) {
 	$list.on('click', '.js-pin', onPinClick);
 	$list.on('click', '.js-suspend', onSuspendClick);
 	$filter.on('keyup', onFilterKeyup);
-	$suspendSelect.on('change', onSuspendSelectChange);
+	$('.select-suspend').on('change', onSuspendSelectChange);
 }
 
 chrome.runtime.getBackgroundPage((eventPage) => {
@@ -174,12 +174,11 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 
 	$(document).ready(() => {
 		$list = $('.js-tabs-list');
-		$suspendSelect = $('.select-suspend select');
 		$filter = $('[type="search"]');
 
 		chrome.storage.sync.get('suspendAfterMins', (items) => {
 			let suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
-			$suspendSelect.val(suspendAfter).attr('selected', true);
+			$('.select-suspend option[value="' + suspendAfter + '"]').attr('selected', true);
 		});
 
 		updateInterface(eventPage.list);

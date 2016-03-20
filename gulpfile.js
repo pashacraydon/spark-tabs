@@ -165,7 +165,7 @@ gulp.task('dev', ['static', 'build-dev', 'reload'], function () {
   gulp.watch(['src/js/*.js', 'src/views/*.html'], ['watch-webpack']);
 });
 
-gulp.task('test', ['build-test', 'reload', 'connect'], function () {
+gulp.task('test', ['build-test', 'reload'], function () {
   gulp.watch(['test/*.js'], ['watch-static']);
   gulp.watch(['test/*.js'], ['watch-webpack-test']);
     return gulp

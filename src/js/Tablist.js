@@ -37,6 +37,12 @@ class Tablist {
 		return elements;
 	}
 
+	destroy() {
+		this.tabs = [];
+		this.history = [];
+		this.settings = {};
+	}
+
 	get(id) {
 		if (!this.tabs) return;
 		let found = $.grep(this.tabs, (item) => {
