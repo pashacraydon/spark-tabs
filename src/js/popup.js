@@ -87,7 +87,7 @@ function onTitleClick (event) {
 		return false;
 	}
 
-	if ($this.closest('li').hasClass('suspended')) {
+	if ($this.closest('li.tab-item').hasClass('suspended')) {
 		tab = list.get(id);
 		createTab(tab);
 	}
