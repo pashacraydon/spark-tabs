@@ -6,7 +6,7 @@ module.exports = {
 
   entry: {
     eventpage: ['./eventPage.js'],
-    tablist: ['./Tablist.js'],
+    models: ['./models.js'],
     constants: ['./constants.js'],
     helpers: ['./helpers.js'],
     popup: ['./popup.js'],

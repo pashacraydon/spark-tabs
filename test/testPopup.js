@@ -1,9 +1,9 @@
+'use strict';
+
+import '../src/js/popup.js';
 import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS, SUSPEND_AFTER_MINS_DEFAULT } from '../src/js/constants.js';
-
 import { tabsFixture } from '../test/fixtures/tablistFixture.js';
-import * as p from '../src/js/popup.js';
-
-import { Tablist, Tab } from '../src/js/Tablist';
+import { Tablist, Tab } from '../src/js/models';
 
 function createList () {
   let history = [1578, 1558, 1586, 1590, 1546];

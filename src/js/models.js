@@ -10,6 +10,11 @@ class Tab {
 		this.created = new Date();
 		this.el = template(this);
 	}
+
+	destroy() {
+		this.el = '';
+		this.created = null;
+	}
 }
 
 
@@ -56,6 +61,15 @@ class Tablist {
 		this.tabs.push(tab);
 	}
 
+	last() {
+		var index = (this.tabs.length - 1);
+		return this.tabs[index];
+	}
+
+	at(index) {
+		return this.tabs[index];
+	}
+
 	prevActiveTab(options) {
 		if (options.set) {
 			this.history.push(options.set);
@@ -89,7 +103,7 @@ class Tablist {
 					return false;
 				}
 				else {
-					chrome.tabs.remove(tabItem.id, function () {
+					chrome.tabs.remove(tabItem.id, () => {
 						setTimeout(() => {
 							this.suspendCallback(tabItem);
 						}, 300);

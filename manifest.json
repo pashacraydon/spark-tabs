@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Radiant Tabs",
     "description": "Simpler tabs organization for Chrome.",
-    "version": "0.0.19",
+    "version": "0.0.21",
     "author": "Pasha Craydon",
     "web_accessible_resources": [
         "assets/*.png"

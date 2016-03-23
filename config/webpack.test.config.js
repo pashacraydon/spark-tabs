@@ -5,7 +5,7 @@ module.exports = {
   context: __dirname + '/../test',
 
   entry: {
-    testPopup: ['./testPopup.js'],
+    base: ['./base.js'],
     common: [
       'jquery'
     ]

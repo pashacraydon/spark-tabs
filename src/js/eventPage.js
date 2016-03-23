@@ -1,6 +1,6 @@
 'use strict';
 
-import { Tablist, Tab } from './Tablist';
+import { Tablist, Tab } from './models';
 import { template } from './helpers.js';
 import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
@@ -74,6 +74,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") {
 		chrome.tabs.query({ 'currentWindow': true }, (tabs) => {
 			$.each(tabs, (count, tab) => {
+				tab.faviconRenderUrl = list.buildFaviconUrl(tab);
 				onTabUpdated(tab);
 			});
 		});
