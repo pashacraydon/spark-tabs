@@ -7,13 +7,13 @@ import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 class Tab {
 	constructor (attrs) {
 		$.extend(this, attrs);
-		this.created = new Date();
+		this.updated = new Date();
 		this.el = template(this);
 	}
 
 	destroy() {
 		this.el = '';
-		this.created = null;
+		this.updated = null;
 	}
 }
 
@@ -55,6 +55,11 @@ class Tablist {
 		});
 
 		return found[0];
+	}
+
+	create(attrs) {
+		let tab = new Tab(attrs);
+		this.add(tab);
 	}
 
 	add(tab) {
@@ -123,7 +128,7 @@ class Tablist {
 
 	getTimeAgo(tab) {
 		let now = new Date(),
-			diffMs = Math.abs((tab.updated || tab.created) - now);
+			diffMs = Math.abs(tab.updated - now);
 		return Math.round(((diffMs % 86400000) % 3600000) / 60000);
 	}
 
@@ -193,7 +198,7 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			return  (b.updated || b.created) - (a.updated || a.created);
+			return a.updated.getTime() - b.updated.getTime();
 		}
 		this.tabs.sort(sortByDate);
 	}

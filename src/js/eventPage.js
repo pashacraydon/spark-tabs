@@ -7,16 +7,15 @@ import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
 
-function onTabUpdated (tab) {
-	if (tab.status === "loading") return false;
-	if (tab.title === "New Tab") return false;
+function onTabUpdated (attrs) {
+	if (attrs.status === "loading") return false;
+	if (attrs.title === "New Tab") return false;
 
-	if (!list.get(tab.id)) {
-		let item = new Tab(tab);
-		list.add(item);
+	if (!list.get(attrs.id)) {
+		list.create(attrs);
 	}
 	else {
-		list.update(tab);
+		list.update(attrs);
 	}
 }
 

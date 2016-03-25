@@ -1,19 +1,14 @@
 'use strict';
 
 import { Tablist, Tab } from '../src/js/models';
-import { tabsFixture } from '../test/fixtures/tablistFixture.js';
+let fixture = require('json!../test/fixtures/tablist.json');
 
-function addMinutes(date, minutes) {
+function addMinutes(minutes) {
+    var date = new Date();
     return new Date(date.getTime() + minutes*60000);
 }
 
-describe('Test Tablist', function () {
-
-  before(function () {
-  });
-
-  after(function () {
-  });
+describe("Tablist", function () {
 
   beforeEach(function() {
     this.addSpy = sinon.spy(Tablist.prototype, 'add');
@@ -21,8 +16,9 @@ describe('Test Tablist', function () {
     this.setSpy = sinon.spy(Tablist.prototype, 'set');
 
     this.list = new Tablist();
-    $.each(tabsFixture, (count, tab) => {
-      this.list.add(tab);
+
+    $.each(fixture, (count, attrs) => {
+      this.list.create(attrs);
     });
   });
 
@@ -35,62 +31,134 @@ describe('Test Tablist', function () {
     this.list = [];
   });
 
-  it('render() should build the html of the tabs.', function () {
-    var el = this.list.render();
-    chai.assert.equal($(el).length, 5);
+  describe("render()", function () {
+
+    it("should build the html of the tabs.", function () {
+      var el = this.list.render();
+      chai.assert.equal($(el).length, 5);
+    });
+
   });
 
-  it('get(id) should return the tab from its id.', function () {
-    var tab = this.list.get(1590);
-    chai.assert.equal(tab.id, 1590);
+  describe("get(id)", function () {
+
+    it("should return the tab from its id.", function () {
+      var tab = this.list.get(1590);
+      chai.assert.equal(tab.id, 1590);
+    });
+
   });
 
-  it('add(tab) should push a new tab into the tabs list.', function () {
-    var tab = new Tab();
-    tab.id = 12345;
-    this.list.add(tab);
-    chai.assert.equal(this.list.last().id, 12345);
-    tab.destroy();
+  describe("add(tab)", function () {
+
+    it("should push a new tab into the tabs list.", function () {
+      var tab = new Tab();
+      tab.id = 12345;
+      this.list.add(tab);
+      chai.assert.equal(this.list.last().id, 12345);
+      tab.destroy();
+    });
+
   });
 
-  it('at(index) should return the tab at the index in the array list.', function () {
-    var tab = this.list.at(0);
-    chai.assert.equal(tab.id, 1590);
+  describe("create(attrs)", function () {
+
+    it("should create a new Tab instance.", function () {
+      let attrs = fixture[0];
+      this.list.create(attrs);
+      chai.assert.isTrue(this.list.at(0) instanceof Tab);
+    });
+
+    it("should add the new Tab instance to the tabs array in the list.", function () {
+      let attrs = fixture[0];
+      this.list.create(attrs);
+      chai.assert.equal(attrs.id, 1590);
+      chai.assert.equal(this.list.at(0).id, 1590);
+    });
+
   });
 
-  it('suspend(tab) should get the tab if it has expired.', function () {
-    var tab = this.list.at(0),
-      callback;
-    this.list.set(tab.id, { 'updated': addMinutes(new Date(), 21) });
-    this.list.suspend.call(this.list, tab);
-    callback = chrome.tabs.get.getCall(0).args[1];
-    sinon.assert.calledWith(chrome.tabs.get, 1590, callback);
+  describe("at(index)", function () {
+
+    it("should return the tab at the index in the array list.", function () {
+      var tab = this.list.at(0);
+      chai.assert.equal(tab.id, 1590);
+    });
+
   });
 
-  it('suspend(tab) should remove the tab if it has expired.', function (done) {
-    var tab = this.list.at(0),
-      callback;
-    this.list.set(tab.id, { 'updated': addMinutes(new Date(), 21) });
-    this.list.suspend.call(this.list, tab);
-    chrome.tabs.get.yield(tab);
+  describe("suspend(tab)", function () {
 
-    setTimeout(() => {
-      callback = chrome.tabs.remove.getCall(0).args[1];
-      sinon.assert.calledWith(chrome.tabs.remove, 1590, callback);
-      done();
-    }, 300);
-  });
+   it("should get the tab if it has expired.", function () {
+      var tab = this.list.at(0),
+        callback;
+      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.suspend.call(this.list, tab);
+      callback = chrome.tabs.get.getCall(0).args[1];
+      sinon.assert.calledWith(chrome.tabs.get, 1590, callback);
+    });
 
-  it('suspendCallback(tab) should add the tab back to the list.', function (done) {
-    var tab = this.list.at(0);
-    this.list.set(tab.id, { 'updated': addMinutes(new Date(), 21) });
-    this.list.suspend.call(this.list, tab);
-    chrome.tabs.get.yield(tab);
+    it("should remove the tab if it has expired.", function (done) {
+      var tab = this.list.at(0),
+        callback;
+      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.suspend.call(this.list, tab);
+      chrome.tabs.get.yield(tab);
 
-    setTimeout(() => {
-      tab.suspended = true;
-      sinon.assert.calledWith(this.addSpy, tab);
-      done();
-    }, 300);
+      setTimeout(() => {
+        callback = chrome.tabs.remove.getCall(0).args[1];
+        sinon.assert.calledWith(chrome.tabs.remove, 1590, callback);
+        done();
+      }, 300);
+    });
+
+    it("should add the tab back to the list.", function (done) {
+      var tab = this.list.at(0);
+      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.suspend.call(this.list, tab);
+      chrome.tabs.get.yield(tab);
+
+      setTimeout(() => {
+        tab.suspended = true;
+        sinon.assert.calledWith(this.addSpy, tab);
+        done();
+      }, 300);
+    });
+
+    describe("sort()", function () {
+
+      beforeEach(function() {
+        this.tab1 = this.list.at(0);
+        this.tab2 = this.list.at(1);
+        this.tab3 = this.list.at(2);
+        this.tab4 = this.list.at(3);
+        this.tab5 = this.list.at(4);
+      });
+
+      afterEach(function () {
+        this.tab1 = {};
+        this.tab2 = {};
+        this.tab3 = {};
+        this.tab4 = {};
+        this.tab5 = {};
+      })
+
+      it("should sort its tabs by recent activity.", function () {
+        this.list.set(this.tab1.id, { 'updated': addMinutes(21) });
+        this.list.set(this.tab2.id, { 'updated': addMinutes(32) });
+        this.list.set(this.tab3.id, { 'updated': addMinutes(16) });
+        this.list.set(this.tab4.id, { 'updated': addMinutes(56) });
+        this.list.set(this.tab5.id, { 'updated': addMinutes(2) });
+
+        this.list.sort();
+
+        chai.assert.equal(this.list.at(0).id, this.tab5.id);
+        chai.assert.equal(this.list.at(1).id, this.tab3.id);
+        chai.assert.equal(this.list.at(2).id, this.tab1.id);
+        chai.assert.equal(this.list.at(3).id, this.tab2.id);
+        chai.assert.equal(this.list.at(4).id, this.tab4.id);
+      });
+
+    });
   });
 });
