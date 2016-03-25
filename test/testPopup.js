@@ -1,6 +1,6 @@
 'use strict';
 
-let fixture = require('json!../test/fixtures/tablist.json');
+import fixture from '../test/fixtures/tablist.js';
 
 import '../src/js/popup.js';
 import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS, SUSPEND_AFTER_MINS_DEFAULT } from '../src/js/constants.js';
@@ -112,12 +112,12 @@ describe("Popup Modal", function () {
   });
 
   describe("onTitleClick()", function () {
-    /*
+
     it("should create a new tab if it is suspended", function () {
       $('.js-tabs-list li.tab-item').addClass('suspended');
       $('.js-tabs-list li.tab-item .js-title')[0].click();
       sinon.assert.calledWith(chrome.tabs.create, { 'url': "https://github.com/acvetkov/sinon-chrome/releases" });
-    }); */
+    });
 
   });
 

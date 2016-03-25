@@ -14,7 +14,7 @@ function onTabUpdated (attrs) {
 	if (!list.get(attrs.id)) {
 		list.create(attrs);
 	}
-	else {
+	else if (list.get(attrs.id)) {
 		list.update(attrs);
 	}
 }

@@ -1,4 +1,4 @@
-[
+let fixture = [
    {
       "active":true,
       "audible":false,
@@ -115,3 +115,5 @@
       "time_ago":0
    }
 ]
+
+export default fixture

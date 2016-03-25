@@ -87,9 +87,9 @@ class Tablist {
 	}
 
 	suspendCallback(tab) {
-		this.add(tab);
-		this.update(tab, { 'ignoreExtraActions' : true });
+		this.create(tab);
 		this.set(tab.id, { 'suspended': true, 'pinned': false });
+		this.update(tab, { 'ignoreExtraActions' : true });
 	}
 
 	suspend(tab) {
@@ -198,6 +198,8 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
+			console.log(a);
+			console.log(b);
 			return a.updated.getTime() - b.updated.getTime();
 		}
 		this.tabs.sort(sortByDate);

@@ -1,7 +1,7 @@
 'use strict';
 
 import { Tablist, Tab } from '../src/js/models';
-let fixture = require('json!../test/fixtures/tablist.json');
+import fixture from '../test/fixtures/tablist.js';
 
 function addMinutes(minutes) {
     var date = new Date();
