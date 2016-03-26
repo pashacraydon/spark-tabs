@@ -1,5 +1,5 @@
 ul.tab-list {
-	min-width: 400px;
+	min-width: 520px;
 	list-style-type: none;
 	border-top: 1px solid #ddd;
 }
@@ -78,9 +78,37 @@ ul li.tab-item a {
 	color: #333;
 }
 
+ul li.no-results {
+	font-size: 15px;
+	text-align: center;
+	padding: 10px;
+}
+
 fieldset {
 	border: none;
 	margin: 0;
+	position: relative;
+}
+
+/* Hide browser input reset in all browsers so we can make our own */
+input[type=text]::-ms-clear {  display: none; width : 0; height: 0; }
+input[type=text]::-ms-reveal {  display: none; width : 0; height: 0; }
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+
+
+.reset-filter {
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	display: none;
+	opacity: 0.75;
+}
+
+.reset-filter:hover {
+	opacity: 1;
 }
 
 * {
@@ -88,7 +116,7 @@ fieldset {
 }
 
 input {
-	width: 80%;
+	width: 100%;
 	font-size: 18px;
 	border: none;
 }

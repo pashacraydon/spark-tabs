@@ -1,11 +1,12 @@
 'use strict';
 
-import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS, SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
+import * as c from './constants.js';
 
 let list;
 let $list;
 let $suspendSelect;
 let $filter;
+let $resetFilter;
 
 function onRemoveTabClick (event) {
 	let $this = $(event.target),
@@ -92,31 +93,69 @@ function onTitleClick (event) {
 		createTab(tab);
 	}
 	else {
-		try {
-			chrome.tabs.update(id, { 'highlighted': true });
-		}
-		catch (error) {
-			createTab(tab);
-		}
+		chrome.tabs.update(id, { 'highlighted': true }, function () {
+			if (chrome.runtime.lastError) {
+				createTab({ 'ur': $this.attr('href') });
+			}
+		});
 	}
 }
 
 function moveSelection (direction) {
 	let $selected = $list.find('.selected:first'),
-		$visibleList = $list.find('li.tab-item').filter(':not(.' + FILTER_HIDE_CLASS + ')'),
+		$visibleList = $list.find('li.tab-item').filter(':not(.' + c.FILTER_HIDE_CLASS + ')'),
 		selectedIndex = $visibleList.index($selected),
 		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
 
-	$visibleList.eq(selectedIndex).removeClass(SELECTED_CLASS);
-	$visibleList.eq(newIndex).addClass(SELECTED_CLASS);
+	$visibleList.eq(selectedIndex).removeClass(c.SELECTED_CLASS);
+	$visibleList.eq(newIndex).addClass(c.SELECTED_CLASS);
+}
+
+function noResultsMessage (query) {
+	let $tabs = $list.find('li.tab-item'),
+		$hidden = $list.find('.' + c.FILTER_HIDE_CLASS),
+		$noResults = $list.find('.no-results');
+
+	if ($hidden.length === $tabs.length) {
+		let msg = 'There are no tabs with the name "' + query + '"';
+		if (!$noResults.length) {
+			$list.prepend('<li class="no-results">' + msg + '</li>');
+		}
+		else {
+			$noResults.text(msg);
+		}
+	}
+	else {
+		if ($noResults.length) {
+			$noResults.remove();
+		}
+	}
+}
+
+function onResetFilter (event) {
+	let $this = $(event.target),
+		$hidden = $list.find('.' + c.FILTER_HIDE_CLASS),
+		$noResults = $list.find('.no-results');
+
+	event.preventDefault();
+
+	$hidden.each(function () {
+		$(this).removeClass(c.FILTER_HIDE_CLASS);
+	});
+
+	$filter.val('').focus();
+	$resetFilter.hide();
+	if ($noResults.length) {
+		$noResults.remove();
+	}
 }
 
 function onFilterKeyup (event) {
 	let $this = $(event.target),
 		query = $this.val(),
-		upKey = (event.keyCode === keys.UP_KEY),
-		downKey = (event.keyCode === keys.DOWN_KEY),
-		enterKey = (event.keyCode === keys.ENTER_KEY);
+		upKey = (event.keyCode === c.keys.UP_KEY),
+		downKey = (event.keyCode === c.keys.DOWN_KEY),
+		enterKey = (event.keyCode === c.keys.ENTER_KEY);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -129,21 +168,30 @@ function onFilterKeyup (event) {
 		moveSelection('down');
 	}
 
-	if (enterKey) {
-		$list.find('.' + SELECTED_CLASS + ' .js-title')[0].click();
+	if (query.length > 0) {
+		$resetFilter.show();
+	}
+	else {
+		$resetFilter.hide();
 	}
 
-	$list.find('li').each(function () {
+	if (enterKey) {
+		$list.find('.' + c.SELECTED_CLASS + ' .js-title')[0].click();
+	}
+
+	$list.find('li.tab-item').each(function () {
 		let $this = $(this),
 			text = $this.find('.title').text().toLowerCase(),
 			isMatch = (text.indexOf(query.toLowerCase()) !== -1);
 
 		if (isMatch) {
-			$this.removeClass(FILTER_HIDE_CLASS);
+			$this.removeClass(c.FILTER_HIDE_CLASS);
 		}
 		else {
-			$this.addClass(FILTER_HIDE_CLASS);
+			$this.addClass(c.FILTER_HIDE_CLASS);
 		}
+
+		noResultsMessage(query);
 	});
 }
 
@@ -152,20 +200,28 @@ function updateInterface (list) {
 		$list.html(elements);
 	});
 
-	$list.find('li:first').addClass(SELECTED_CLASS);
+	$list.find('li:first').addClass(c.SELECTED_CLASS);
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
 	$list.on('click', '.js-title', onTitleClick);
 	$list.on('click', '.js-pin', onPinClick);
 	$list.on('click', '.js-suspend', onSuspendClick);
 	$filter.on('keyup', onFilterKeyup);
+	$resetFilter.on('click', onResetFilter);
 }
 
 chrome.runtime.getBackgroundPage((eventPage) => {
 	list = eventPage.list;
 
 	$(document).ready(() => {
+		$('fieldset').prepend(
+			'<a href="#" class="js-reset-filter reset-filter">' +
+				'<img src="' + chrome.extension.getURL('assets/close.png') + '" />' +
+			'</a>'
+		);
+
 		$list = $('.js-tabs-list');
 		$filter = $('[type="search"]');
+		$resetFilter = $('.js-reset-filter');
 		updateInterface(eventPage.list);
 	});
 });

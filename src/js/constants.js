@@ -12,4 +12,9 @@ const keys = {
 	};
 const radix = 10;
 
-export { SUSPEND_AFTER_MINS_DEFAULT, FILTER_HIDE_CLASS, SELECTED_CLASS, keys, radix }
+export { SUSPEND_AFTER_MINS_DEFAULT,
+         FILTER_HIDE_CLASS,
+         SELECTED_CLASS,
+         keys,
+         radix
+       }
