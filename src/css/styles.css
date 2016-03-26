@@ -88,7 +88,7 @@ fieldset {
 }
 
 input {
-	width: 180px;
+	width: 80%;
 	font-size: 18px;
 	border: none;
 }
@@ -148,10 +148,6 @@ ul.link-options li a {
 
 ul.link-options li a:hover {
 	opacity: 1;
-}
-
-.select-suspend {
-	float: right;
 }
 
 .suspend-tab {

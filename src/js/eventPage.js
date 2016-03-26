@@ -80,3 +80,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 	}
 });
 
+chrome.windows.onFocusChanged.addListener((windowId) => {
+	list.settings.currWindowId = windowId;
+});
+
+

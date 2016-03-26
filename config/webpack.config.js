@@ -10,6 +10,7 @@ module.exports = {
     constants: ['./constants.js'],
     helpers: ['./helpers.js'],
     popup: ['./popup.js'],
+    options: ['./options.js'],
     common: [
       'jquery'
     ]

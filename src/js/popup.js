@@ -147,26 +147,16 @@ function onFilterKeyup (event) {
 	});
 }
 
-function onSuspendSelectChange (event) {
-	let $this = $(event.target),
-		newSuspendValue = ($this.val() === "never") ? $this.val() : parseInt($this.val(), radix);
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	chrome.storage.sync.set({'suspendAfterMins': newSuspendValue});
-}
-
 function updateInterface (list) {
-	let el = list.render();
-	$list.html(el);
+	list.render().done(function (elements) {
+		$list.html(elements);
+	});
 	$list.find('li:first').addClass(SELECTED_CLASS);
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
 	$list.on('click', '.js-title', onTitleClick);
 	$list.on('click', '.js-pin', onPinClick);
 	$list.on('click', '.js-suspend', onSuspendClick);
 	$filter.on('keyup', onFilterKeyup);
-	$('.select-suspend').on('change', onSuspendSelectChange);
 }
 
 chrome.runtime.getBackgroundPage((eventPage) => {
@@ -175,12 +165,6 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 	$(document).ready(() => {
 		$list = $('.js-tabs-list');
 		$filter = $('[type="search"]');
-
-		chrome.storage.sync.get('suspendAfterMins', (items) => {
-			let suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
-			$('.select-suspend option[value="' + suspendAfter + '"]').attr('selected', true);
-		});
-
 		updateInterface(eventPage.list);
 	});
 });

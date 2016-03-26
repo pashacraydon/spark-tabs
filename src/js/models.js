@@ -28,18 +28,26 @@ class Tablist {
 	}
 
 	render() {
-		let elements = '';
+		let elements = '',
+			deferred = $.Deferred();
 
 		this.sort();
 
-		$.each(this.tabs, (count, tab) => {
-			if (!tab) return;
-			tab.time_ago = this.getTimeAgo(tab);
-			tab.el = template(tab);
-			elements += tab.el;
+		chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+			var currWindowId = tabs[0].windowId;
+
+			$.each(this.tabs, (count, tab) => {
+				if (!tab) return;
+				if (tab.windowId === currWindowId) {
+					tab.time_ago = this.getTimeAgo(tab);
+					tab.el = template(tab);
+					elements += tab.el;
+				}
+			});
+			deferred.resolve(elements);
 		});
 
-		return elements;
+		return deferred.promise();
 	}
 
 	destroy() {
@@ -69,6 +77,10 @@ class Tablist {
 	last() {
 		var index = (this.tabs.length - 1);
 		return this.tabs[index];
+	}
+
+	first() {
+		return this.tabs[0];
 	}
 
 	at(index) {
@@ -198,8 +210,6 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			console.log(a);
-			console.log(b);
 			return a.updated.getTime() - b.updated.getTime();
 		}
 		this.tabs.sort(sortByDate);
