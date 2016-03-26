@@ -47,6 +47,7 @@ describe("Popup Modal", function () {
   });
 
   it("should render a list of 5 tabs html.", function () {
+    chrome.tabs.query.yield(fixture);
     chai.assert.equal($('.js-tabs-list li.tab-item').length, 5);
   });
 

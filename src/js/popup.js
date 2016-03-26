@@ -151,6 +151,7 @@ function updateInterface (list) {
 	list.render().done(function (elements) {
 		$list.html(elements);
 	});
+
 	$list.find('li:first').addClass(SELECTED_CLASS);
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
 	$list.on('click', '.js-title', onTitleClick);

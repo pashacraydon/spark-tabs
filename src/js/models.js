@@ -33,8 +33,8 @@ class Tablist {
 
 		this.sort();
 
-		chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-			var currWindowId = tabs[0].windowId;
+		chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
+			var currWindowId = queryTabs[0].windowId;
 
 			$.each(this.tabs, (count, tab) => {
 				if (!tab) return;

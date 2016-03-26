@@ -26,16 +26,14 @@ describe("Tablist", function () {
     this.addSpy.restore();
     this.updateSpy.restore();
     this.setSpy.restore();
-
-    this.list.destroy();
-    this.list = [];
   });
 
   describe("render()", function () {
 
     it("should build the html of the tabs.", function () {
-      var el = this.list.render();
-      chai.assert.equal($(el).length, 5);
+      this.list.render().done(function (el) {
+        chai.assert.equal($(el).length, 5);
+      });
     });
 
   });
