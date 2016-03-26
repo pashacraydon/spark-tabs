@@ -34,6 +34,7 @@ class Tablist {
 		this.sort();
 
 		chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
+			if (!queryTabs[0]) return false;
 			var currWindowId = queryTabs[0].windowId;
 
 			$.each(this.tabs, (count, tab) => {
@@ -210,7 +211,7 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			return a.updated.getTime() - b.updated.getTime();
+			return b.updated.getTime() - a.updated.getTime();
 		}
 		this.tabs.sort(sortByDate);
 	}

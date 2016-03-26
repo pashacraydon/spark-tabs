@@ -23,7 +23,6 @@ describe("Popup Modal", function () {
     this.suspendCallbackSpy = sinon.spy(Tablist.prototype, 'suspendCallback');
     createList.call(this);
     chrome.runtime.getBackgroundPage.yield({ 'list': this.list });
-    this.fixture = $('.js-tabs-list').html();
   });
 
   after(function () {
@@ -34,11 +33,9 @@ describe("Popup Modal", function () {
   });
 
   beforeEach(function() {
-    $('.js-tabs-list').html(this.fixture);
   });
 
   afterEach(function() {
-    $('.js-tabs-list').html('');
   });
 
   it("should request the background tabs on startup.", function () {
@@ -49,11 +46,6 @@ describe("Popup Modal", function () {
   it("should render a list of 5 tabs html.", function () {
     chrome.tabs.query.yield(fixture);
     chai.assert.equal($('.js-tabs-list li.tab-item').length, 5);
-  });
-
-  it("should set the select option to the suspend after minutes value from storage.", function () {
-    chrome.storage.sync.get.yield({ 'suspendAfterMins': 40 });
-    chai.assert.equal($('.select-suspend option:selected').val(), 40);
   });
 
   describe("onSuspendClick()", function () {
@@ -117,7 +109,8 @@ describe("Popup Modal", function () {
     it("should create a new tab if it is suspended", function () {
       $('.js-tabs-list li.tab-item').addClass('suspended');
       $('.js-tabs-list li.tab-item .js-title')[0].click();
-      sinon.assert.calledWith(chrome.tabs.create, { 'url': "https://github.com/acvetkov/sinon-chrome/releases" });
+      console.log(chrome.tabs.create.getCall(0));
+      sinon.assert.calledWith(chrome.tabs.create, { 'url': "https://github.com/Microsoft/TypeScript/issues/2726" });
     });
 
   });

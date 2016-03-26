@@ -26,6 +26,7 @@ describe("Tablist", function () {
     this.addSpy.restore();
     this.updateSpy.restore();
     this.setSpy.restore();
+    this.list.destroy();
   });
 
   describe("render()", function () {
@@ -149,6 +150,7 @@ describe("Tablist", function () {
         this.list.set(this.tab5.id, { 'updated': addMinutes(2) });
 
         this.list.sort();
+        debugger;
 
         chai.assert.equal(this.list.at(0).id, this.tab5.id);
         chai.assert.equal(this.list.at(1).id, this.tab3.id);
