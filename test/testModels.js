@@ -140,7 +140,7 @@ describe("Tablist", function () {
         this.tab3 = {};
         this.tab4 = {};
         this.tab5 = {};
-      })
+      });
 
       it("should sort its tabs by recent activity.", function () {
         this.list.set(this.tab1.id, { 'updated': addMinutes(21) });
@@ -150,15 +150,55 @@ describe("Tablist", function () {
         this.list.set(this.tab5.id, { 'updated': addMinutes(2) });
 
         this.list.sort();
-        debugger;
 
-        chai.assert.equal(this.list.at(0).id, this.tab5.id);
-        chai.assert.equal(this.list.at(1).id, this.tab3.id);
+        chai.assert.equal(this.list.at(0).id, this.tab4.id);
+        chai.assert.equal(this.list.at(1).id, this.tab2.id);
         chai.assert.equal(this.list.at(2).id, this.tab1.id);
-        chai.assert.equal(this.list.at(3).id, this.tab2.id);
-        chai.assert.equal(this.list.at(4).id, this.tab4.id);
+        chai.assert.equal(this.list.at(3).id, this.tab3.id);
+        chai.assert.equal(this.list.at(4).id, this.tab5.id);
       });
 
     });
+
+    describe("getTimeAgo(tab)", function () {
+
+      it("should return the minutes ago of a tabs updated attribute.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(21) });
+        time_ago = this.list.getTimeAgo(tab);
+        chai.assert.equal(time_ago.mins, 21);
+      });
+
+      it("should return the hours ago of a tabs updated attribute.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(72) });
+        time_ago = this.list.getTimeAgo(tab);
+        chai.assert.equal(time_ago.hours, 1);
+      });
+
+      it("should return a friendly formatted version of the minutes ago.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(21) });
+        time_ago = this.list.getTimeAgo(tab);
+        chai.assert.equal(time_ago.friendly, '21m ago');
+      });
+
+      it("should return a friendly formatted version of the hours ago.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(82) });
+        time_ago = this.list.getTimeAgo(tab);
+        chai.assert.equal(time_ago.friendly, '1h 22m ago');
+      });
+
+    });
+
   });
 });

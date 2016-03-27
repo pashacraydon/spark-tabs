@@ -40,7 +40,8 @@ class Tablist {
 			$.each(this.tabs, (count, tab) => {
 				if (!tab) return;
 				if (tab.windowId === currWindowId) {
-					tab.time_ago = this.getTimeAgo(tab);
+					let timeAgo = this.getTimeAgo(tab);
+					tab.time_ago = timeAgo.friendly;
 					tab.el = template(tab);
 					elements += tab.el;
 				}
@@ -115,7 +116,7 @@ class Tablist {
 		if (this.settings.suspendAfterMins === "never") return false;
 		if (prevActiveTab) return false;
 
-		if (timeAgo >= this.settings.suspendAfterMins) {
+		if (timeAgo.mins >= this.settings.suspendAfterMins) {
 			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
@@ -141,8 +142,28 @@ class Tablist {
 
 	getTimeAgo(tab) {
 		let now = new Date(),
-			diffMs = Math.abs(tab.updated - now);
-		return Math.round(((diffMs % 86400000) % 3600000) / 60000);
+			diffMs = Math.abs(tab.updated - now),
+			minsAgo = Math.round(((diffMs % 86400000) % 3600000) / 60000),
+			hoursAgo = Math.round((diffMs % 86400000) / 3600000),
+			time = '';
+
+		function friendlyTime() {
+			if (hoursAgo) {
+				time = hoursAgo + 'h ';
+			}
+
+			if (minsAgo) {
+				time += minsAgo + 'm ago';
+			}
+
+			return time;
+		}
+
+		return {
+			'mins': minsAgo,
+			'hours': hoursAgo,
+			'friendly': friendlyTime()
+		}
 	}
 
 	buildFaviconUrl(tab) {

@@ -10,7 +10,7 @@ let $resetFilter;
 
 function onRemoveTabClick (event) {
 	let $this = $(event.target),
-		id = parseInt($this.closest('li.tab-item').attr('id'), radix);
+		id = parseInt($this.closest('li.tab-item').attr('id'), c.radix);
 
 	event.preventDefault();
 	event.stopPropagation();

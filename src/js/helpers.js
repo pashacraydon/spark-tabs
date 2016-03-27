@@ -13,8 +13,7 @@ function template (data) {
 		faviconUrl = data.faviconRenderUrl ? '<span class="favicon">' +
 		  '<img class="favicon" src="' + data.faviconRenderUrl + '" />' +
 		  '</span>' : '',
-		timeAgo = (data.time_ago === 0 || data.time_ago === undefined) ? '' : ((data.time_ago === 1) ? (data.time_ago + ' min') : (data.time_ago + ' mins')),
-		timeAgoSpan = (timeAgo === '') ? '' : '<span class="time-ago">' + timeAgo + '</span>';
+		timeAgoSpan = (data.time_ago === '') ? '' : '<span class="time-ago">' + data.time_ago + '</span>';
 
 	return '<li id="' + data.id + '" class="' + suspendedClass + ' tab-item">' +
 		faviconUrl +
