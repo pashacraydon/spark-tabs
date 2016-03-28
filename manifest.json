@@ -1,15 +1,15 @@
 {
     "manifest_version": 2,
-    "name": "Radiant Tabs",
+    "name": "Spark Tabs",
     "description": "Simpler tabs organization for Chrome.",
-    "version": "0.0.26",
+    "version": "0.0.27",
     "author": "Pasha Craydon",
     "options_page": "options.html",
     "web_accessible_resources": [
         "assets/*.png"
     ],
     "browser_action": {
-        "default_title": "Radiant tabs plugin",
+        "default_title": "Spark tabs plugin",
         "default_icon": "assets/icon.png",
         "default_popup": "popup.html"
     },
@@ -23,10 +23,10 @@
     "commands": {
         "_execute_browser_action": {
             "suggested_key": {
-                "windows": "Ctrl+Z",
-                "mac": "Command+Z",
-                "chromeos": "Ctrl+Z",
-                "linux": "Ctrl+Z"
+                "windows": "Ctrl+shift+Z",
+                "mac": "Command+shift+Z",
+                "chromeos": "Ctrl+shift+Z",
+                "linux": "Ctrl+shift+Z"
             }
         }
     },

@@ -1,19 +1,19 @@
 {
-  "name": "radiant-tabs",
-  "version": "0.0.29",
+  "name": "spark-tabs",
+  "version": "0.0.30",
   "description": "A Chrome extension for managing your tab.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pashasc/radiant_tabs.git"
+    "url": "https://github.com/pashasc/spark_tabs.git"
   },
   "author": "Pasha Craydon",
   "bugs": {
-    "url": "https://github.com/pashasc/radiant_tabs/issues"
+    "url": "https://github.com/pashasc/spark_tabs/issues"
   },
-  "homepage": "https://github.com/pashasc/radiant_tabs",
+  "homepage": "https://github.com/pashasc/spark_tabs",
   "dependencies": {
     "jquery": "^2.1.4"
   },

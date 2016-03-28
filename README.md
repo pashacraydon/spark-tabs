@@ -1,4 +1,4 @@
-# Radiant Tabs
+# Spark Tabs
 
 A Chrome extension to organize your tabs
 
