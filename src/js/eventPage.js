@@ -8,7 +8,6 @@ import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 window.list = new Tablist();
 
 function onTabUpdated (attrs) {
-	if (attrs.status === "loading") return false;
 	if (attrs.title === "New Tab") return false;
 
 	if (!list.get(attrs.id)) {
@@ -27,7 +26,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 		if (prevActiveTab) {
 			list.set(prevActiveTab.id, { 'updated': new Date() });
 		}
-	}, 300);
+	}, 600);
 });
 
 chrome.tabs.onHighlighted.addListener((info) => {
@@ -39,6 +38,7 @@ chrome.tabs.onHighlighted.addListener((info) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
+	console.log(tab);
 	if (change.status !== "loading") {
 		onTabUpdated(tab);
 	}
@@ -59,6 +59,7 @@ chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
 
 chrome.tabs.onRemoved.addListener((tabId, tab) => {
 	list.remove(tabId);
+	chrome.runtime.sendMessage({'removed': tabId});
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {

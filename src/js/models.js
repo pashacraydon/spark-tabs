@@ -116,16 +116,18 @@ class Tablist {
 		if (this.settings.suspendAfterMins === "never") return false;
 		if (prevActiveTab) return false;
 
-		if (timeAgo.mins >= this.settings.suspendAfterMins) {
+		if ((timeAgo.mins >= this.settings.suspendAfterMins) || (timeAgo.hours >= 1)) {
 			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
 				}
 				else {
 					chrome.tabs.remove(tabItem.id, () => {
-						setTimeout(() => {
-							this.suspendCallback(tabItem);
-						}, 300);
+						chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+							if (msg.removed) {
+								this.suspendCallback(tabItem);
+							}
+						});
 					});
 				}
 			});

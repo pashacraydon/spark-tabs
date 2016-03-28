@@ -26,7 +26,7 @@ function onRemoveTabClick (event) {
 
 function onPinClick (event) {
 	let $this = $(event.target),
-		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
+		id = parseInt($this.closest('li.tab-item').attr('id'), c.radix);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -42,7 +42,7 @@ function onPinClick (event) {
 
 function onSuspendClick (event) {
 	let $this = $(event.target),
-		id = parseInt($this.closest('li.tab-item').attr('id'), 10);
+		id = parseInt($this.closest('li.tab-item').attr('id'), c.radix);
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -56,12 +56,14 @@ function onSuspendClick (event) {
 		we need to get the tab first so we can add it back
 		to the list after it has been removed.
 	*/
-	chrome.tabs.get(id, function (tab) {
-		chrome.tabs.remove(id, function () {
-			setTimeout(function () {
-				list.suspendCallback(tab);
-				$this.closest('li.tab-item').addClass('suspended');
-			}, 300);
+	chrome.tabs.get(id, (tab) => {
+		chrome.tabs.remove(id, () => {
+			chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+				if (msg.removed) {
+					list.suspendCallback(tab);
+					$this.closest('li.tab-item').addClass('suspended');
+				}
+			});
 		});
 	});
 }
@@ -78,7 +80,7 @@ function createTab (tab) {
 
 function onTitleClick (event) {
 	let $this = $(event.target),
-		id = parseInt($this.closest('li.tab-item').attr('id'), 10),
+		id = parseInt($this.closest('li.tab-item').attr('id'), c.radix),
 		tab;
 
 	event.preventDefault();
