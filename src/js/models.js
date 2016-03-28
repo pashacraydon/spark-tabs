@@ -100,7 +100,7 @@ class Tablist {
 		}
 	}
 
-	suspendCallback(tab) {
+	addBack(tab) {
 		this.create(tab);
 		this.set(tab.id, { 'suspended': true, 'pinned': false });
 		this.update(tab, { 'ignoreExtraActions' : true });
@@ -125,7 +125,7 @@ class Tablist {
 					chrome.tabs.remove(tabItem.id, () => {
 						chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 							if (msg.removed) {
-								this.suspendCallback(tabItem);
+								this.addBack(tabItem);
 							}
 						});
 					});

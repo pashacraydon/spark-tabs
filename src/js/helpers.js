@@ -4,11 +4,11 @@ function template (data) {
 	var suspendedClass = data.suspended ? 'suspended': '',
 		suspendedLink = data.suspended ? '' :
 			'<a href="#" class="js-suspend suspend-tab">' +
-				'<img src="' + chrome.extension.getURL('assets/suspend.png') + '" title="Hide tab" />' +
+				'<img src="' + chrome.extension.getURL('assets/close.png') + '" title="Close" />' +
 			'</a>',
 		pinnedLink = (data.pinned || data.suspended) ? '' :
 			'<a href="#" class="js-pin pin-tab">' +
-				'<img src="' + chrome.extension.getURL('assets/pin.png') + '" title="Pin tab" />' +
+				'<img src="' + chrome.extension.getURL('assets/pin.png') + '" title="Pin" />' +
 			'</a>',
 		faviconUrl = data.faviconRenderUrl ? '<span class="favicon">' +
 		  '<img class="favicon" src="' + data.faviconRenderUrl + '" />' +
@@ -18,12 +18,12 @@ function template (data) {
 	return '<li id="' + data.id + '" class="' + suspendedClass + ' tab-item">' +
 		faviconUrl +
 		'<span class="title">' +
-		'<a href="#" class="js-title">' + data.title + '</a>' +
+		'<a href="' + data.url + '" class="js-title">' + data.title + '</a>' +
 		'</span>' +
 		'<ul class="link-options">' +
 			'<li>' + timeAgoSpan + '</li>' +
 			'<li><a href="#" class="js-close-tab close-tab">' +
-				'<img src="' + chrome.extension.getURL('assets/bin.png') + '" title="Close tab" />' +
+				'<img src="' + chrome.extension.getURL('assets/bin.png') + '" title="Trash" />' +
 			'</a></li>' +
 			'<li>' + pinnedLink + '</li>' +
 			'<li>' + suspendedLink + '</li>' +

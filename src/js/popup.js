@@ -60,7 +60,7 @@ function onSuspendClick (event) {
 		chrome.tabs.remove(id, () => {
 			chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 				if (msg.removed) {
-					list.suspendCallback(tab);
+					list.addBack(tab);
 					$this.closest('li.tab-item').addClass('suspended');
 				}
 			});
@@ -217,7 +217,7 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 	$(document).ready(() => {
 		$('fieldset').prepend(
 			'<a href="#" class="js-reset-filter reset-filter">' +
-				'<img src="' + chrome.extension.getURL('assets/close.png') + '" />' +
+				'<img src="' + chrome.extension.getURL('assets/cancel.png') + '" />' +
 			'</a>'
 		);
 

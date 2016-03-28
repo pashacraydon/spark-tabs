@@ -38,7 +38,6 @@ chrome.tabs.onHighlighted.addListener((info) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
-	console.log(tab);
 	if (change.status !== "loading") {
 		onTabUpdated(tab);
 	}
