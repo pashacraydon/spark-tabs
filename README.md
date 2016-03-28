@@ -1,6 +1,6 @@
 # Spark Tabs
 
-A Chrome extension to organize your tabs
+Very simple tabs organization for Chrome
 
 ## Features
 

@@ -20,8 +20,8 @@ function template (data) {
 		'<span class="title">' +
 		'<a href="' + data.url + '" class="js-title">' + data.title + '</a>' +
 		'</span>' +
+		timeAgoSpan +
 		'<ul class="link-options">' +
-			'<li>' + timeAgoSpan + '</li>' +
 			'<li><a href="#" class="js-close-tab close-tab">' +
 				'<img src="' + chrome.extension.getURL('assets/bin.png') + '" title="Trash" />' +
 			'</a></li>' +

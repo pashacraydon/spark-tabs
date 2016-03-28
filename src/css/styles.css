@@ -14,14 +14,14 @@ ul li a {
 
 ul li.tab-item {
 	position: relative;
-	padding: 6px 170px 6px 15px;
+	padding: 6px 85px 6px 15px;
 	margin: 0;
 	border-left: 5px solid #150385;
 	height: 32px;
 	line-height: 32px;
 	overflow: hidden;
 	border-bottom: 1px solid #ddd;
-	width: 350px;
+	width: 415px;
 }
 
 ul li.tab-item.suspended {
@@ -142,19 +142,17 @@ input {
 
 .time-ago {
 	font-size: 11px;
-	position: relative;
-	top: -5px;
+	position: absolute;
+	right: 10px;
 	color: #999;
-	border-right: 1px solid #aaa;
-	padding-right: 12px;
-	margin-right: 5px;
 }
 
 .filter-hidden {
 	display: none;
 }
 
-.selected {
+.selected,
+li.tab-item:hover {
 	background-color: #f2f9fc !important;
 }
 
@@ -162,6 +160,13 @@ ul.link-options {
 	position: absolute;
 	top: 10px;
 	right: 0;
+	display: none;
+	background-color: #f2f9fc;
+}
+
+ul li.tab-item:hover ul.link-options,
+ul li.tab-item.selected ul.link-options {
+	display: block;
 }
 
 ul.link-options li {

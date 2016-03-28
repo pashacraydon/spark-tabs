@@ -122,13 +122,13 @@ class Tablist {
 					return false;
 				}
 				else {
-					chrome.tabs.remove(tabItem.id, () => {
-						chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-							if (msg.removed) {
-								this.addBack(tabItem);
-							}
-						});
+					chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+						if (msg.removed) {
+							this.addBack(tabItem);
+						}
 					});
+
+					chrome.tabs.remove(tabItem.id);
 				}
 			});
 		}

@@ -57,14 +57,14 @@ function onSuspendClick (event) {
 		to the list after it has been removed.
 	*/
 	chrome.tabs.get(id, (tab) => {
-		chrome.tabs.remove(id, () => {
-			chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-				if (msg.removed) {
-					list.addBack(tab);
-					$this.closest('li.tab-item').addClass('suspended');
-				}
-			});
+		chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+			if (msg.removed) {
+				list.addBack(tab);
+				$this.closest('li.tab-item').addClass('suspended');
+			}
 		});
+
+		chrome.tabs.remove(id);
 	});
 }
 
