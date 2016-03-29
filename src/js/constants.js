@@ -8,7 +8,10 @@ const keys = {
 		'ENTER_KEY': 13,
 		'DOWN_KEY': 40,
 		'UP_KEY': 38,
-		'ESCAPE_KEY': 27
+		'ESCAPE_KEY': 27,
+    'P_KEY': 80,
+    'T_KEY': 84,
+    'C_KEY': 67
 	};
 const radix = 10;
 

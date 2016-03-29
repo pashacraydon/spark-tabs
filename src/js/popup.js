@@ -7,6 +7,7 @@ let $list;
 let $suspendSelect;
 let $filter;
 let $resetFilter;
+let $body;
 
 function onRemoveTabClick (event) {
 	let $this = $(event.target),
@@ -57,14 +58,10 @@ function onSuspendClick (event) {
 		to the list after it has been removed.
 	*/
 	chrome.tabs.get(id, (tab) => {
-		chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-			if (msg.removed) {
-				list.addBack(tab);
-				$this.closest('li.tab-item').addClass('suspended');
-			}
+		list.set(tab.id, { 'suspended': true, 'pinned': false });
+		chrome.tabs.remove(id, () => {
+			$this.closest('li.tab-item').addClass('suspended');
 		});
-
-		chrome.tabs.remove(id);
 	});
 }
 
@@ -101,16 +98,6 @@ function onTitleClick (event) {
 			}
 		});
 	}
-}
-
-function moveSelection (direction) {
-	let $selected = $list.find('.selected:first'),
-		$visibleList = $list.find('li.tab-item').filter(':not(.' + c.FILTER_HIDE_CLASS + ')'),
-		selectedIndex = $visibleList.index($selected),
-		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
-
-	$visibleList.eq(selectedIndex).removeClass(c.SELECTED_CLASS);
-	$visibleList.eq(newIndex).addClass(c.SELECTED_CLASS);
 }
 
 function noResultsMessage (query) {
@@ -152,9 +139,20 @@ function onResetFilter (event) {
 	}
 }
 
-function onFilterKeyup (event) {
-	let $this = $(event.target),
-		query = $this.val(),
+function moveSelection (direction) {
+	let $selected = $list.find('.selected:first'),
+		$visibleList = $list.find('li.tab-item').filter(':not(.' + c.FILTER_HIDE_CLASS + ')'),
+		selectedIndex = $visibleList.index($selected),
+		newIndex = (direction === 'up') ? selectedIndex - 1 : selectedIndex + 1;
+
+	$visibleList.eq(selectedIndex).removeClass(c.SELECTED_CLASS);
+	$visibleList.eq(newIndex).addClass(c.SELECTED_CLASS);
+}
+
+function onBodyKeyup (event) {
+	let pKey = (event.keyCode === c.keys.P_KEY),
+		cKey = (event.keyCode === c.keys.C_KEY),
+		tKey = (event.keyCode === c.keys.T_KEY),
 		upKey = (event.keyCode === c.keys.UP_KEY),
 		downKey = (event.keyCode === c.keys.DOWN_KEY),
 		enterKey = (event.keyCode === c.keys.ENTER_KEY);
@@ -170,15 +168,42 @@ function onFilterKeyup (event) {
 		moveSelection('down');
 	}
 
+	if (pKey) {
+		$list.find('.' + c.SELECTED_CLASS + ' .js-pin')[0].click();
+	}
+
+	if (cKey) {
+		$list.find('.' + c.SELECTED_CLASS + ' .js-suspend')[0].click();
+	}
+
+	if (tKey) {
+		$list.find('.' + c.SELECTED_CLASS + ' .js-close-tab')[0].click();
+	}
+
+	if (enterKey) {
+		$list.find('.' + c.SELECTED_CLASS + ' .js-title')[0].click();
+	}
+}
+
+function onFilterKeyup (event) {
+	let $this = $(event.target),
+		query = $this.val(),
+		upKey = (event.keyCode === c.keys.UP_KEY),
+		downKey = (event.keyCode === c.keys.DOWN_KEY);
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (upKey || downKey) {
+		$filter.blur();
+		onBodyKeyup(event);
+	}
+
 	if (query.length > 0) {
 		$resetFilter.show();
 	}
 	else {
 		$resetFilter.hide();
-	}
-
-	if (enterKey) {
-		$list.find('.' + c.SELECTED_CLASS + ' .js-title')[0].click();
 	}
 
 	$list.find('li.tab-item').each(function () {
@@ -208,6 +233,7 @@ function updateInterface (list) {
 	$list.on('click', '.js-pin', onPinClick);
 	$list.on('click', '.js-suspend', onSuspendClick);
 	$filter.on('keyup', onFilterKeyup);
+	$body.on('keyup', onBodyKeyup);
 	$resetFilter.on('click', onResetFilter);
 }
 
@@ -221,6 +247,7 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 			'</a>'
 		);
 
+		$body = $('body');
 		$list = $('.js-tabs-list');
 		$filter = $('[type="search"]');
 		$resetFilter = $('.js-reset-filter');

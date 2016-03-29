@@ -100,12 +100,6 @@ class Tablist {
 		}
 	}
 
-	addBack(tab) {
-		this.create(tab);
-		this.set(tab.id, { 'suspended': true, 'pinned': false });
-		this.update(tab, { 'ignoreExtraActions' : true });
-	}
-
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab({ 'get': true }),
@@ -122,12 +116,7 @@ class Tablist {
 					return false;
 				}
 				else {
-					chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-						if (msg.removed) {
-							this.addBack(tabItem);
-						}
-					});
-
+					this.set(tab.id, { 'suspended': true, 'pinned': false });
 					chrome.tabs.remove(tabItem.id);
 				}
 			});

@@ -14,7 +14,7 @@ ul li a {
 
 ul li.tab-item {
 	position: relative;
-	padding: 6px 85px 6px 15px;
+	padding: 6px 90px 6px 15px;
 	margin: 0;
 	border-left: 5px solid #150385;
 	height: 32px;
@@ -162,6 +162,8 @@ ul.link-options {
 	right: 0;
 	display: none;
 	background-color: #f2f9fc;
+	min-width: 90px;
+	text-align: right;
 }
 
 ul li.tab-item:hover ul.link-options,

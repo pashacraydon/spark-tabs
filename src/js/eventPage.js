@@ -56,9 +56,11 @@ chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
 	});
 });
 
-chrome.tabs.onRemoved.addListener((tabId, tab) => {
-	list.remove(tabId);
-	chrome.runtime.sendMessage({'removed': tabId});
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+	var tab = list.get(tabId);
+	if (!tab.suspended) {
+		list.remove(tabId);
+	}
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
@@ -80,8 +82,5 @@ chrome.runtime.onInstalled.addListener((details) => {
 	}
 });
 
-chrome.windows.onFocusChanged.addListener((windowId) => {
-	list.settings.currWindowId = windowId;
-});
 
 
