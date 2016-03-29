@@ -139,6 +139,16 @@ function onResetFilter (event) {
 	}
 }
 
+function onTabItemHover (event) {
+	let $this = $(event.target),
+		$tabItem = $this.closest('li.tab-item');
+
+	event.preventDefault();
+
+	$list.find('.' + c.SELECTED_CLASS).removeClass(c.SELECTED_CLASS);
+	$tabItem.addClass(c.SELECTED_CLASS);
+}
+
 function moveSelection (direction) {
 	let $selected = $list.find('.selected:first'),
 		$visibleList = $list.find('li.tab-item').filter(':not(.' + c.FILTER_HIDE_CLASS + ')'),
@@ -232,6 +242,7 @@ function updateInterface (list) {
 	$list.on('click', '.js-title', onTitleClick);
 	$list.on('click', '.js-pin', onPinClick);
 	$list.on('click', '.js-suspend', onSuspendClick);
+	$list.on('mouseover', 'li.tab-item', onTabItemHover);
 	$filter.on('keyup', onFilterKeyup);
 	$body.on('keyup', onBodyKeyup);
 	$resetFilter.on('click', onResetFilter);
