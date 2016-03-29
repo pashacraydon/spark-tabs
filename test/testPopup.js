@@ -20,22 +20,14 @@ describe("Popup Modal", function () {
 
   before(function () {
     this.removeSpy = sinon.spy(Tablist.prototype, 'remove');
-    this.suspendCallbackSpy = sinon.spy(Tablist.prototype, 'suspendCallback');
     createList.call(this);
     chrome.runtime.getBackgroundPage.yield({ 'list': this.list });
   });
 
   after(function () {
     this.removeSpy.restore();
-    this.suspendCallbackSpy.restore();
     this.list.destroy();
     chrome.reset();
-  });
-
-  beforeEach(function() {
-  });
-
-  afterEach(function() {
   });
 
   it("should request the background tabs on startup.", function () {
@@ -61,14 +53,11 @@ describe("Popup Modal", function () {
       chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1578');
     });
 
-    it("should add the tab it removed back to the list.", function (done) {
+    it("should not remove the tab from the list.", function () {
       $('.js-tabs-list li:first .js-suspend')[0].click();
       chrome.tabs.get.yield(fixture[0]);
       chrome.tabs.remove.yield();
-      setTimeout(() => {
-        sinon.assert.calledWith(this.suspendCallbackSpy, fixture[0]);
-        done();
-      }, 300);
+      chai.assert.isTrue(this.list.get(fixture[0].id) instanceof Tab);
     });
 
   });
