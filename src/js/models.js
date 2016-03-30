@@ -23,7 +23,8 @@ class Tablist {
 		this.tabs = [];
 		this.history = [];
 		this.settings = {
-			'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT
+			'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT,
+			'whitelist': []
 		};
 	}
 
@@ -47,8 +48,6 @@ class Tablist {
 				}
 			});
 			deferred.resolve(elements);
-
-			console.log(this.tabs);
 		});
 
 		return deferred.promise();
@@ -113,7 +112,8 @@ class Tablist {
 		if (this.settings.suspendAfterMins === "never") return false;
 		if (prevActiveTab) return false;
 
-		if ((timeAgo.mins >= this.settings.suspendAfterMins) || (timeAgo.hours >= 1)) {
+		//this.settings.suspendAfterMins
+		if ((timeAgo.mins >= 1) || (timeAgo.hours >= 1)) {
 			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
@@ -175,6 +175,16 @@ class Tablist {
 		}
 	}
 
+	isWhitelisted(tab) {
+		if (tab.whitelisted) return false;
+		if (tab.url) {
+			if (this.settings.whitelist.indexOf(tab.url) !== -1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	update(updatedTab, options) {
 		let tabItem = this.get(updatedTab.id);
 
@@ -191,6 +201,10 @@ class Tablist {
 				{ 'updated': new Date() },
 				{ 'time_ago': 0 }
 			);
+
+			$.extend(this.tabs[index],
+				{ 'whitelisted': this.isWhitelisted(this.tabs[index])
+			});
 
 			if (!options.ignoreExtraActions) {
 				$.each(this.tabs, (count, tab) => {

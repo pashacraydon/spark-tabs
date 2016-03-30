@@ -68,6 +68,7 @@ function onWhitelistSubmit (event) {
   }
   else {
     $whitelistInput.removeClass(ERROR_CLASS);
+    $whitelistInput.val('');
     $errorMsg.hide();
     createWhitelist(url);
   }
