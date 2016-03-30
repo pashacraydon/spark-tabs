@@ -67,8 +67,13 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-	list.settings.suspendAfterMins = changes.suspendAfterMins.newValue;
-	list.settings.whitelist = changes.whitelist.newValue;
+	if (changes.suspendAfterMins) {
+		list.settings.suspendAfterMins = changes.suspendAfterMins.newValue;
+	}
+
+	if (changes.whitelist) {
+		list.settings.whitelist = changes.whitelist.newValue;
+	}
 });
 
 chrome.storage.sync.get('suspendAfterMins', (items) => {
