@@ -178,11 +178,16 @@ class Tablist {
 	isWhitelisted(tab) {
 		if (tab.whitelisted) return false;
 		if (tab.url) {
-			if (this.settings.whitelist.indexOf(tab.url) !== -1) {
-				return false;
+			// if url is substring of a whitelisted url
+			if (new RegExp(this.settings.whitelist.join("|")).test(tab.url)) {
+			   return true;
+			}
+			// if url is a direct match of a whitelisted url
+			if (this.settings.whitelist.indexOf(tab.url) > -1) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	update(updatedTab, options) {
