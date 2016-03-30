@@ -6,9 +6,10 @@
 </head>
 <body>
 
-  <div class="select-suspend">
-    <h1> Spark Tabs Options</h1>
-    <label>Suspend tabs after</label>
+  <h1> Spark Tabs Options</h1>
+
+  <fieldset class="js-select-suspend">
+    <label>Automatically close tabs after idling</label>
       <select>
           <option value="5">5 mins</option>
           <option value="10">10 mins</option>
@@ -17,7 +18,18 @@
           <option value="40">40 mins</option>
           <option value="never">never</option>
       </select>
-  </div>
+  </fieldset>
+
+  <fieldset>
+    <ul class="js-whitelisted-region whitelisted-region">
+    </ul>
+    <form class="whitelist">
+      <label>Add a url to whitelist. Whitelisted url's will not be closed.</label><br />
+      <input type="text" name="url"  class="js-whitelist-input" placeholder="e.g. https://www.nytimes.com" autocomplete="off"><br>
+      <span class="error-msg">Please enter a valid url.</span><br />
+      <input type="submit"  class="js-whitelist-submit" value="Submit">
+    </form>
+  </fieldset>
 
 <script src="common.js"></script>
 <script src="options.js"></script>

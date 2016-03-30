@@ -32,6 +32,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onHighlighted.addListener((info) => {
 	$.each(info.tabIds, (index, tabId) => {
 		chrome.tabs.get(tabId, (tab) => {
+			if (chrome.runtime.lastError) return false;
 			onTabUpdated(tab);
 		});
 	});
@@ -45,6 +46,7 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
 	chrome.tabs.get(activeInfo.tabId, (tab) => {
+		if (chrome.runtime.lastError) return false;
 		onTabUpdated(tab);
 	});
 });
@@ -57,8 +59,9 @@ chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+	if (chrome.runtime.lastError) return false;
 	var tab = list.get(tabId);
-	if (!tab.suspended) {
+	if (tab && !tab.suspended) {
 		list.remove(tabId);
 	}
 });
@@ -82,5 +85,15 @@ chrome.runtime.onInstalled.addListener((details) => {
 	}
 });
 
+chrome.windows.onRemoved.addListener(function (windowId) {
+	chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
+		$.each(list.tabs, (count, tab) => {
+			if (!tab) return;
+			if (tab.windowId === windowId) {
+				list.remove(tab.id);
+			}
+		});
+	});
+});
 
 

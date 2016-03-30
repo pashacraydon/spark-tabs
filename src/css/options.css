@@ -1,5 +1,71 @@
-
-.select-suspend {
+body {
+  font-size: 14px;
   max-width: 50%;
   margin: 0 auto;
+}
+
+.whitelisted-region {
+  padding-left: 10px;
+}
+
+.whitelisted-region li {
+  background-color: #ccc;
+  width: 96%;
+  position:relative;
+  display: block;
+  padding: 5px;
+}
+
+.whitelisted-region li {
+  margin: 10px 0 10px;
+}
+
+.whitelisted-region li img {
+  height: 20px;
+  top: 3px;
+  position: absolute;
+  right: 5px;
+}
+
+fieldset {
+  margin: 20px 0;
+  border: none;
+  border: 1px solid #CCC;
+}
+
+form.whitelist {
+  display: block;
+  padding: 10px;
+}
+
+input[type="text"] {
+  border: 1px solid #CCC;
+  padding: 10px 2% 10px;
+  width: 96%;
+  font-size: 18px;
+  margin: 10px 0 0;
+}
+
+input[type="submit"] {
+  margin: 10px 0 0;
+  padding: 8px 10px 8px;
+  background-color: #eee;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="submit"]:hover {
+  background-color: #CCC;
+}
+
+.error-msg {
+  display: none;
+  color: red;
+  font-size: 12px;
+}
+
+form input[type="text"].error {
+  border: 1px solid red;
 }

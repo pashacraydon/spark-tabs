@@ -47,6 +47,8 @@ class Tablist {
 				}
 			});
 			deferred.resolve(elements);
+
+			console.log(this.tabs);
 		});
 
 		return deferred.promise();
@@ -105,6 +107,7 @@ class Tablist {
 			prevActiveTab = this.prevActiveTab({ 'get': true }),
 			storeTab = tab;
 
+		if (tab.whitelisted) return false;
 		if (tab.suspended) return false;
 		if (tab.pinned) return false;
 		if (this.settings.suspendAfterMins === "never") return false;
