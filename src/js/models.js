@@ -103,8 +103,7 @@ class Tablist {
 
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
-			prevActiveTab = this.prevActiveTab({ 'get': true }),
-			storeTab = tab;
+			prevActiveTab = this.prevActiveTab({ 'get': true });
 
 		if (tab.whitelisted) return false;
 		if (tab.suspended) return false;
@@ -112,8 +111,8 @@ class Tablist {
 		if (this.settings.suspendAfterMins === "never") return false;
 		if (prevActiveTab) return false;
 
-		//this.settings.suspendAfterMins
-		if ((timeAgo.mins >= 1) || (timeAgo.hours >= 1)) {
+		if ((timeAgo.mins >= this.settings.suspendAfterMins) || (timeAgo.hours >= 1)) {
+			console.log(tab);
 			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
@@ -176,15 +175,10 @@ class Tablist {
 	}
 
 	isWhitelisted(tab) {
-		if (tab.whitelisted) return false;
+		if (tab.whitelisted) return true;
 		if (tab.url) {
-			// if url is substring of a whitelisted url
 			if (new RegExp(this.settings.whitelist.join("|")).test(tab.url)) {
 			   return true;
-			}
-			// if url is a direct match of a whitelisted url
-			if (this.settings.whitelist.indexOf(tab.url) > -1) {
-				return true;
 			}
 		}
 		return false;
