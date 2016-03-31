@@ -257,7 +257,6 @@ function updateInterface (list) {
 	$body.on('keyup', onBodyKeyup);
 	$resetFilter.on('click', onResetFilter);
 	$closeAll.on('click', onCloseAllTabsClick);
-	console.log(tooltip);
 	tooltip({
 		'showDelay': 0
 	});

@@ -86,7 +86,7 @@ chrome.storage.sync.get('whitelist', (items) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") {
-		chrome.tabs.query({ 'currentWindow': true }, (tabs) => {
+		chrome.tabs.query({}, (tabs) => {
 			$.each(tabs, (count, tab) => {
 				tab.faviconRenderUrl = list.buildFaviconUrl(tab);
 				onTabUpdated(tab);

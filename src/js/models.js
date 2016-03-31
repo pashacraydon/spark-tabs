@@ -112,7 +112,6 @@ class Tablist {
 		if (prevActiveTab) return false;
 
 		if ((timeAgo.mins >= this.settings.suspendAfterMins) || (timeAgo.hours >= 1)) {
-			console.log(tab);
 			chrome.tabs.get(tab.id, (tabItem) => {
 				if (chrome.runtime.lastError) {
 					return false;
@@ -175,6 +174,7 @@ class Tablist {
 	}
 
 	isWhitelisted(tab) {
+		if (!this.settings.whitelist.length) return false;
 		if (tab.whitelisted) return true;
 		if (tab.url) {
 			if (new RegExp(this.settings.whitelist.join("|")).test(tab.url)) {

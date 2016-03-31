@@ -1,5 +1,6 @@
 'use strict';
 
+import '../src/js/options.js';
 
 describe("Options", function () {
 
