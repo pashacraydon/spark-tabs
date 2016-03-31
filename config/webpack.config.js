@@ -12,7 +12,8 @@ module.exports = {
     popup: ['./popup.js'],
     options: ['./options.js'],
     common: [
-      'jquery'
+      'jquery',
+      'tooltip'
     ]
   },
 
@@ -60,7 +61,8 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
+      tooltip: 'tooltip'
     }),
    new webpack.optimize.CommonsChunkPlugin('common', 'common.js')
   ]

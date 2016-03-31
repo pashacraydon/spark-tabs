@@ -2,12 +2,15 @@
 
 import * as c from './constants.js';
 
-let list;
-let $list;
-let $suspendSelect;
-let $filter;
-let $resetFilter;
-let $body;
+let tooltip = require('tooltip');
+
+let list,
+	$list,
+	$suspendSelect,
+	$filter,
+	$resetFilter,
+	$body,
+	$closeAll;
 
 function onRemoveTabClick (event) {
 	let $this = $(event.target),
@@ -149,6 +152,13 @@ function onTabItemHover (event) {
 	$tabItem.addClass(c.SELECTED_CLASS);
 }
 
+function onCloseAllTabsClick (event) {
+	event.preventDefault();
+	$list.find('li.tab-item:not(:first-child)').each(function (count) {
+		$(this).find('.js-suspend')[0].click();
+	});
+}
+
 function moveSelection (direction) {
 	let $selected = $list.find('.selected:first'),
 		$visibleList = $list.find('li.tab-item').filter(':not(.' + c.FILTER_HIDE_CLASS + ')'),
@@ -246,6 +256,11 @@ function updateInterface (list) {
 	$filter.on('keyup', onFilterKeyup);
 	$body.on('keyup', onBodyKeyup);
 	$resetFilter.on('click', onResetFilter);
+	$closeAll.on('click', onCloseAllTabsClick);
+	console.log(tooltip);
+	tooltip({
+		'showDelay': 0
+	});
 }
 
 chrome.runtime.getBackgroundPage((eventPage) => {
@@ -255,13 +270,21 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 		$('fieldset').prepend(
 			'<a href="#" class="js-reset-filter reset-filter">' +
 				'<img src="' + chrome.extension.getURL('assets/cancel.png') + '" />' +
-			'</a>'
+			'</a>' +
+			'<ul class="controls-all-tabs">' +
+				'<li class="close-all">' +
+					'<a href="#" class="js-close-all-tabs" data-tooltip="Close all tabs">' +
+						'<img src="' + chrome.extension.getURL('assets/close-all.png') + '" />' +
+					'</a>' +
+				'</li>' +
+			'</ul>'
 		);
 
 		$body = $('body');
 		$list = $('.js-tabs-list');
 		$filter = $('[type="search"]');
 		$resetFilter = $('.js-reset-filter');
+		$closeAll = $('.js-close-all-tabs');
 		updateInterface(eventPage.list);
 	});
 });
