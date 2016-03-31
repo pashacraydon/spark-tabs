@@ -95,6 +95,11 @@ fieldset {
 	position: relative;
 }
 
+.tooltip {
+	background-color: #f6f6f6 !important;
+	border: 1px solid #CCC !important;
+}
+
 /* Hide browser input reset in all browsers so we can make our own */
 input[type=text]::-ms-clear {  display: none; width : 0; height: 0; }
 input[type=text]::-ms-reveal {  display: none; width : 0; height: 0; }

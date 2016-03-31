@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Spark Tabs",
     "description": "Simpler tabs organization for Chrome.",
-    "version": "0.0.38",
+    "version": "0.0.39",
     "author": "Pasha Craydon",
     "options_page": "options.html",
     "web_accessible_resources": [

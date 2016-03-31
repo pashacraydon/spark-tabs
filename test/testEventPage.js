@@ -1,6 +1,9 @@
 'use strict';
 
-describe("", function () {
+import '../src/js/eventPage.js';
+
+
+describe("Event callbacks", function () {
 
   beforeEach(function() {
   });
@@ -8,7 +11,13 @@ describe("", function () {
   afterEach(function() {
   });
 
-  it(" ", function () {
+  describe("chrome.windows.onRemoved()", function () {
+
+    it("should build the html of the tabs.", function () {
+      chrome.windows.onRemoved.yield(1);
+    });
+
   });
+
 
 });

@@ -4,11 +4,11 @@ function template (data) {
 	var suspendedClass = data.suspended ? 'suspended': '',
 		whitelistedClass = data.whitelisted ? 'whitelisted': '',
 		suspendedLink = data.suspended ? '' :
-			'<a href="#" class="js-suspend suspend-tab" data-tooltip="Close tab">' +
+			'<a href="#" class="js-suspend suspend-tab" data-tooltip="Close tab | c">' +
 				'<img src="' + chrome.extension.getURL('assets/close.png') + '" />' +
 			'</a>',
 		pinnedLink = (data.pinned || data.suspended) ? '' :
-			'<a href="#" class="js-pin pin-tab" data-tooltip="Pin tab">' +
+			'<a href="#" class="js-pin pin-tab" data-tooltip="Pin tab | p">' +
 				'<img src="' + chrome.extension.getURL('assets/pin.png') + '" />' +
 			'</a>',
 		faviconUrl = data.faviconRenderUrl ? '<span class="favicon">' +
@@ -23,7 +23,7 @@ function template (data) {
 		'</span>' +
 		timeAgoSpan +
 		'<ul class="link-options">' +
-			'<li><a href="#" class="js-close-tab close-tab" data-tooltip="Throw out tab">' +
+			'<li><a href="#" class="js-close-tab close-tab" data-tooltip="Throw out tab | t">' +
 				'<img src="' + chrome.extension.getURL('assets/bin.png') + '" />' +
 			'</a></li>' +
 			'<li>' + pinnedLink + '</li>' +

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Radiant Tabs Options</title>
+  <title>Spark Tabs Options</title>
   <link rel="stylesheet" href="css/options.css">
 </head>
 <body>
@@ -17,6 +17,8 @@
           <option value="30">30 mins</option>
           <option value="40">40 mins</option>
           <option value="60">60 mins</option>
+          <option value="120">120 mins</option>
+          <option value="240">240 mins</option>
           <option value="never">never</option>
       </select>
   </fieldset>
@@ -25,8 +27,8 @@
     <ul class="js-whitelisted-region whitelisted-region">
     </ul>
     <form class="whitelist">
-      <label>Add a url to whitelist. Any url's under it will not be closed.</label><br />
-      <input type="text" name="url"  class="js-whitelist-input" placeholder="e.g. https://www.nytimes.com" autocomplete="off"><br>
+      <label>Add a url to whitelist. Any url's under it will not be closed after idling.</label><br />
+      <input type="text" name="url"  class="js-whitelist-input" placeholder="e.g. http://www.nytimes.com" autocomplete="off"><br>
       <span class="error-msg">Please enter a valid url.</span><br />
       <input type="submit"  class="js-whitelist-submit" value="Add url">
     </form>

@@ -9,7 +9,7 @@ body {
 }
 
 .whitelisted-region li {
-  background-color: #ccc;
+  background-color: #F2D9B6;
   width: 96%;
   position:relative;
   display: block;
@@ -30,7 +30,7 @@ body {
 fieldset {
   margin: 20px 0;
   border: none;
-  border: 1px solid #CCC;
+  border: 1px solid #FA9302;
 }
 
 form.whitelist {
@@ -49,15 +49,15 @@ input[type="text"] {
 input[type="submit"] {
   margin: 10px 0 0;
   padding: 8px 10px 8px;
-  background-color: #eee;
+  background-color: #FA9302;
   border: none;
   font-size: 16px;
   cursor: pointer;
   width: 100%;
 }
 
-input[type="submit"]:hover {
-  background-color: #CCC;
+input[type="submit"]:focus {
+  background-color: #58A619;
 }
 
 .error-msg {
