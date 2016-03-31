@@ -109,7 +109,7 @@ let fixture = [
       "title":"vm-shim",
       "url":"https://www.npmjs.com/package/vm-shim",
       "width":1056,
-      "windowId":1,
+      "windowId":2,
       "el":"<li id=\"1578\" class=\" tab-item\"><span class=\"favicon\"><img class=\"favicon\" src=\"https://www.npmjs.com/static/images/touch-icons/favicon.ico\" /></span><span class=\"title\"><a href=\"#\" class=\"js-title\">vm-shim</a></span><span class=\"time-ago\"></span><ul class=\"link-options\"><li><a href=\"#\" class=\"js-close-tab close-tab\"><img src=\"chrome-extension://hnnbgjfhbgfjlknohaohjamkdbepolib/assets/bin.png\" title=\"Close tab\" /></a></li><li><a href=\"#\" class=\"js-pin pin-tab\"><img src=\"chrome-extension://hnnbgjfhbgfjlknohaohjamkdbepolib/assets/pin.png\" title=\"Pin tab\" /></a></li><li><a href=\"#\" class=\"js-suspend suspend-tab\"><img src=\"chrome-extension://hnnbgjfhbgfjlknohaohjamkdbepolib/assets/suspend.png\" title=\"Suspend tab\" /></a></li></ul></li>",
       "faviconRenderUrl":"https://www.npmjs.com/static/images/touch-icons/favicon.ico",
       "time_ago":0

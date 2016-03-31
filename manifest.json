@@ -2,20 +2,20 @@
     "manifest_version": 2,
     "name": "Spark Tabs",
     "description": "Simpler tabs organization for Chrome.",
-    "version": "0.0.39",
+    "version": "0.0.41",
     "author": "Pasha Craydon",
     "options_page": "options.html",
     "web_accessible_resources": [
         "assets/*.png"
     ],
     "icons": {
-        "16": "assets/icon16.png",
-        "48": "assets/icon48.png",
-        "128": "assets/icon128.png"
+        "16": "assets/spark16.png",
+        "48": "assets/spark48.png",
+        "128": "assets/spark128.png"
     },
     "browser_action": {
         "default_title": "Spark tabs plugin",
-        "default_icon": "assets/icon.png",
+        "default_icon": "assets/spark.png",
         "default_popup": "popup.html"
     },
     "background": {

@@ -35,25 +35,28 @@ describe("Popup Modal", function () {
     sinon.assert.calledOnce(chrome.runtime.getBackgroundPage);
   });
 
-  it("should render a list of 5 tabs html.", function () {
+  it("should render the html for all the tabs in its window.", function () {
     chrome.tabs.query.yield(fixture);
-    chai.assert.equal($('.js-tabs-list li.tab-item').length, 5);
+    // 4 fixture tabs have the same windowId, the 5th one is different
+    chai.assert.equal($('.js-tabs-list li.tab-item').length, 4);
   });
 
   describe("onSuspendClick()", function () {
 
     it("should get the tab.", function () {
       $('.js-tabs-list li:first .js-suspend')[0].click();
-      chai.assert.equal(chrome.tabs.get.getCall(0).args[0], '1578');
+      chai.assert.equal(chrome.tabs.get.getCall(0).args[0], '1590');
     });
 
     it("should remove the tab.", function () {
       $('.js-tabs-list li:first .js-suspend')[0].click();
       chrome.tabs.get.yield(fixture[0]);
-      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1578');
+      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1590');
     });
 
     it("should not remove the tab from the list.", function () {
+      chrome.tabs.get.reset();
+      chrome.tabs.remove.reset();
       $('.js-tabs-list li:first .js-suspend')[0].click();
       chrome.tabs.get.yield(fixture[0]);
       chrome.tabs.remove.yield();
@@ -65,14 +68,16 @@ describe("Popup Modal", function () {
   describe("onPinClick()", function () {
 
     it("should update the tab.", function () {
+      let expectedTabId = 1558;
       $('.js-tabs-list li:first .js-pin')[0].click();
       var callback = chrome.tabs.update.getCall(0).args[2];
-      sinon.assert.calledWith(chrome.tabs.update, 1578, { 'pinned': true }, callback);
+      sinon.assert.calledWith(chrome.tabs.update, expectedTabId, { 'pinned': true }, callback);
     });
 
     it("callback should hide its pin icon.", function () {
+      let expectedTabId = 1558;
       $('.js-tabs-list li:first .js-pin')[0].click();
-      chrome.tabs.update.yield(1578, { 'pinned': true });
+      chrome.tabs.update.yield(expectedTabId, { 'pinned': true });
       chai.assert.isTrue($('.js-tabs-list li:first .js-pin').is(':hidden'));
     });
 
@@ -81,14 +86,15 @@ describe("Popup Modal", function () {
   describe("onRemoveTabClick()", function () {
 
     it("should close the tab.", function () {
+      let expectedTabId = 1558;
       $('.js-tabs-list li:first .js-close-tab')[0].click();
-      sinon.assert.calledWith(this.removeSpy, 1578);
+      sinon.assert.calledWith(this.removeSpy, expectedTabId);
     });
 
     it("callback should remove the item from the UI.", function () {
       $('.js-tabs-list li:first .js-close-tab')[0].click();
-      this.removeSpy.yield(1578);
-      chai.assert.equal($('.js-tabs-list li.tab-item').length, 4);
+      this.removeSpy.yield(1558);
+      chai.assert.equal($('.js-tabs-list li.tab-item').length, 3);
     });
 
   });
@@ -96,9 +102,11 @@ describe("Popup Modal", function () {
   describe("onTitleClick()", function () {
 
     it("should create a new tab if it is suspended", function () {
+      let expectedUrl = "https://www.npmjs.com/package/sinon-chrome";
       $('.js-tabs-list li.tab-item').addClass('suspended');
       $('.js-tabs-list li.tab-item .js-title')[0].click();
-      sinon.assert.calledWith(chrome.tabs.create, { 'url': "http://stackoverflow.com/questions/2869827/how-to-test-chrome-extensions" });
+      let callback = chrome.tabs.create.getCall(0).args[1];
+      sinon.assert.calledWith(chrome.tabs.create, { 'url': expectedUrl }, callback);
     });
 
   });

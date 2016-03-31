@@ -27,6 +27,7 @@ describe("Tablist", function () {
     this.updateSpy.restore();
     this.setSpy.restore();
     this.list.destroy();
+    chrome.reset();
   });
 
   describe("render()", function () {
