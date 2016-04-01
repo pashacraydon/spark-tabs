@@ -18,17 +18,6 @@ function onTabUpdated (attrs) {
 	}
 }
 
-chrome.tabs.onActivated.addListener((activeInfo) => {
-	list.prevActiveTab({ 'set': activeInfo.tabId });
-
-	setTimeout(() => {
-		let prevActiveTab = list.prevActiveTab({ 'get': true });
-		if (prevActiveTab) {
-			list.set(prevActiveTab.id, { 'updated': new Date() });
-		}
-	}, 600);
-});
-
 chrome.tabs.onHighlighted.addListener((info) => {
 	$.each(info.tabIds, (index, tabId) => {
 		chrome.tabs.get(tabId, (tab) => {
@@ -49,6 +38,15 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 		if (chrome.runtime.lastError) return false;
 		onTabUpdated(tab);
 	});
+
+	list.prevActiveTab({ 'set': activeInfo.tabId });
+
+	setTimeout(() => {
+		let prevActiveTab = list.prevActiveTab({ 'get': true });
+		if (prevActiveTab) {
+			list.set(prevActiveTab.id, { 'updated': new Date() });
+		}
+	}, 600);
 });
 
 chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
