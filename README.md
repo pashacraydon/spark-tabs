@@ -2,6 +2,8 @@
 
 Very simple tabs organization for Chrome
 
+![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.png)
+
 ## Features
 
 * Order tabs by recent activity
