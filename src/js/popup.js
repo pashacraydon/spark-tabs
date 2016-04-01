@@ -176,15 +176,17 @@ function onBodyKeyup (event) {
 		upKey = (event.keyCode === c.keys.UP_KEY),
 		downKey = (event.keyCode === c.keys.DOWN_KEY),
 		enterKey = (event.keyCode === c.keys.ENTER_KEY);
+		jKey = (event.keyCode === c.keys.J_KEY),
+		kKey = (event.keyCode === c.keys.K_KEY);
 
 	event.preventDefault();
 	event.stopPropagation();
 
-	if (upKey) {
+	if (upKey || kKey) {
 		moveSelection('up');
 	}
 
-	if (downKey) {
+	if (downKey || jKey) {
 		moveSelection('down');
 	}
 
@@ -260,6 +262,10 @@ function updateInterface (list) {
 	tooltip({
 		'showDelay': 0
 	});
+
+	setTimeout(() => {
+		$filter.focus();
+	}, 0);
 }
 
 chrome.runtime.getBackgroundPage((eventPage) => {

@@ -28,10 +28,10 @@
     "commands": {
         "_execute_browser_action": {
             "suggested_key": {
-                "windows": "Ctrl+Z",
-                "mac": "Command+Z",
-                "chromeos": "Ctrl+Z",
-                "linux": "Ctrl+Z"
+                "windows": "Ctrl+A",
+                "mac": "Command+A",
+                "chromeos": "Ctrl+A",
+                "linux": "Ctrl+A"
             }
         }
     },

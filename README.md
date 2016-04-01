@@ -4,10 +4,22 @@ Very simple tabs organization for Chrome
 
 ## Features
 
-* Order tabs by recent activity with color-coded 'heat' gradient
-* Suspend tabs after set number of minutes
+* Order tabs by recent activity
+* Automatically close tabs after idling for set number of minutes
+* Whitelist tabs that won't automatically close after idling
+* Save closed tabs in the dropdown list
 * Filter tabs by keyword
 * Navigate tabs with keyboard shortcuts
+
+## Keyboard Shortcuts
+
+* Command + A, toggle tabs popup
+* ↑ or k, navigate up one tab
+* ↓ or j, navigate down one tab
+* p, pin tab
+* t, close tab and throw out from list
+* c, close tab but leave 'dimmed' in list
+* esc, clear filter text
 
 ## Dev
 

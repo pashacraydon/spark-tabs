@@ -11,7 +11,9 @@ const keys = {
 		'ESCAPE_KEY': 27,
     'P_KEY': 80,
     'T_KEY': 84,
-    'C_KEY': 67
+    'C_KEY': 67,
+    'J_KEY': 74,
+    'k_KEY': 75
 	};
 const radix = 10;
 

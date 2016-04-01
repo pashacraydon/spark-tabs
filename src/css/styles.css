@@ -166,8 +166,7 @@ input:focus {
 	display: none;
 }
 
-.selected,
-li.tab-item:hover {
+.selected {
 	background-color: #E6EDF5 !important;
 }
 
@@ -176,14 +175,13 @@ ul.link-options {
 	top: 10px;
 	right: 0;
 	display: none;
-	background-color: #E6EDF5;
 	min-width: 90px;
 	text-align: right;
 }
 
-ul li.tab-item:hover ul.link-options,
 ul li.tab-item.selected ul.link-options {
 	display: block;
+	background-color: #E6EDF5;
 }
 
 ul.link-options li {
