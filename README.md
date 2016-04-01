@@ -6,7 +6,7 @@ Very simple tabs organization for Chrome
 
 * Order tabs by recent activity
 * Automatically close tabs after idling for set number of minutes
-* Whitelist tabs that won't automatically close after idling
+* Whitelist urls so their tabs won't automatically close after idling
 * Save closed tabs in the dropdown list
 * Filter tabs by keyword
 * Navigate tabs with keyboard shortcuts
