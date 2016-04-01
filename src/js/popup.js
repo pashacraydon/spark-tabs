@@ -175,7 +175,7 @@ function onBodyKeyup (event) {
 		tKey = (event.keyCode === c.keys.T_KEY),
 		upKey = (event.keyCode === c.keys.UP_KEY),
 		downKey = (event.keyCode === c.keys.DOWN_KEY),
-		enterKey = (event.keyCode === c.keys.ENTER_KEY);
+		enterKey = (event.keyCode === c.keys.ENTER_KEY),
 		jKey = (event.keyCode === c.keys.J_KEY),
 		kKey = (event.keyCode === c.keys.K_KEY);
 
