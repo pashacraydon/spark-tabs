@@ -51,7 +51,7 @@ describe("Popup Modal", function () {
     it("should remove the tab.", function () {
       $('.js-tabs-list li:first .js-suspend')[0].click();
       chrome.tabs.get.yield(fixture[0]);
-      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1590');
+      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1234');
     });
 
     it("should not remove the tab from the list.", function () {
