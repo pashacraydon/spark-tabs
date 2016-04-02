@@ -1,6 +1,6 @@
 {
   "name": "spark-tabs",
-  "version": "0.0.46",
+  "version": "0.0.49",
   "description": "A Chrome extension for managing your tab.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/pashasc/spark_tabs.git"
   },
-  "author": "Pasha Craydon",
+  "author": "@pashasc",
   "bugs": {
     "url": "https://github.com/pashasc/spark_tabs/issues"
   },

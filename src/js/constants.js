@@ -1,6 +1,6 @@
 'use strict';
 
-const SUSPEND_AFTER_MINS_DEFAULT = 20;
+const SUSPEND_AFTER_MINS_DEFAULT = 40;
 const FILTER_HIDE_CLASS = 'filter-hidden';
 const SELECTED_CLASS = 'selected';
 const keys = {

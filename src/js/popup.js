@@ -131,6 +131,10 @@ function onResetFilter (event) {
 
 	event.preventDefault();
 
+	if (!$this.closest('a').hasClass('js-reset-filter')) {
+		return false;
+	}
+
 	$hidden.each(function () {
 		$(this).removeClass(c.FILTER_HIDE_CLASS);
 	});
@@ -153,7 +157,11 @@ function onTabItemHover (event) {
 }
 
 function onCloseAllTabsClick (event) {
+	let $this = $(event.target);
 	event.preventDefault();
+	if (!$this.closest('a').hasClass('js-close-all-tabs')) {
+		return false;
+	}
 	$list.find('li.tab-item:not(:first-child)').each(function (count) {
 		$(this).find('.js-suspend')[0].click();
 	});
