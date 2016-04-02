@@ -1,6 +1,6 @@
 # Spark Tabs
 
-Automatic tabs organization for Chrome.
+Automated tabs organization for Chrome.
 
 ![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.jpg)
 
@@ -41,11 +41,8 @@ Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs
 * Run ```gulp```.
 * In the Chrome extensions page, click ```Load unpacked extension...``` and select the ```build``` directory.
 
-The extension will automatically reload on code changes.
-
 ## Creating a build
 
-* Add your pem as `config/extension.pem`.
 * ```gulp build``` will generate a build in ```./dist```.
 
 ## License

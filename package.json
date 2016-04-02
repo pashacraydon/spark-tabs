@@ -1,6 +1,6 @@
 {
   "name": "spark-tabs",
-  "version": "0.0.51",
+  "version": "0.0.53",
   "description": "A Chrome extension for managing your tab.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
