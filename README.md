@@ -4,6 +4,8 @@ Very simple tabs organization for Chrome
 
 ![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.jpg)
 
+Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs/mcbakkceggomfmikgcmcncoobaclkbam/ "Spark Tabs Chrome Extension")
+
 ## Features
 
 * Order tabs by recent activity
