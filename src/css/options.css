@@ -2,6 +2,7 @@ body {
   font-size: 14px;
   max-width: 50%;
   margin: 0 auto;
+  background-color: #eee;
 }
 
 .whitelisted-region {
@@ -9,11 +10,16 @@ body {
 }
 
 .whitelisted-region li {
-  background-color: #DBD1ED;
+  border: 1px solid #ccc;
   width: 96%;
   position:relative;
   display: block;
-  padding: 5px;
+  padding: 10px;
+}
+
+.whitelisted-region li:hover {
+  border: 1px solid #aaa;
+  background-color: #f6f6f6;
 }
 
 .whitelisted-region li {
@@ -22,7 +28,7 @@ body {
 
 .whitelisted-region li img {
   height: 20px;
-  top: 3px;
+  top: 7px;
   position: absolute;
   right: 5px;
 }
@@ -30,7 +36,7 @@ body {
 fieldset {
   margin: 20px 0;
   border: none;
-  border: 1px solid #5423A8;
+  background-color: #fff;
 }
 
 form.whitelist {
@@ -39,7 +45,8 @@ form.whitelist {
 }
 
 input[type="text"] {
-  border: 1px solid #CCC;
+  border: 1px solid #aaa;
+  background-color: #f5f5f5;
   padding: 10px 2% 10px;
   width: 96%;
   font-size: 18px;
@@ -49,7 +56,6 @@ input[type="text"] {
 input[type="submit"] {
   margin: 10px 0 0;
   padding: 8px 10px 8px;
-  background-color: #5423A8;
   border: none;
   font-size: 16px;
   cursor: pointer;
