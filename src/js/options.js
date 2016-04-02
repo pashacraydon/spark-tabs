@@ -91,6 +91,8 @@ $(document).ready(() => {
   $errorMsg = $('.error-msg');
   $whitelistRegion = $('.js-whitelisted-region');
 
+  $('.icon').prepend('<img src="' + chrome.extension.getURL('assets/spark48.png') + '" />')
+
   chrome.storage.sync.get('suspendAfterMins', (items) => {
     let suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
     $('.js-select-suspend option[value="' + suspendAfter + '"]').attr('selected', true);

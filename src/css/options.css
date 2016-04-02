@@ -33,6 +33,10 @@ body {
   right: 5px;
 }
 
+.icon {
+  margin-right: 10px;
+}
+
 fieldset {
   margin: 20px 0;
   border: none;
