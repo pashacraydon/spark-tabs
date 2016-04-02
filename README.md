@@ -1,6 +1,6 @@
 # Spark Tabs
 
-Regain control of your tabs in Chrome.
+Automatic tabs organization for Chrome.
 
 ![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.jpg)
 
