@@ -2,7 +2,7 @@
 
 Very simple tabs organization for Chrome
 
-![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.png)
+![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screenshot.jpg)
 
 ## Features
 

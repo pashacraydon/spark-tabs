@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
     "name": "Spark Tabs",
-    "description": "Simpler tabs organization for Chrome.",
+    "description": "Simple tabs organization for Chrome.",
     "version": "0.0.41",
-    "author": "Pasha Craydon",
+    "author": "@pashasc",
     "options_page": "options.html",
     "web_accessible_resources": [
         "assets/*.png"
