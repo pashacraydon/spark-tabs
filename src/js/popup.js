@@ -63,7 +63,7 @@ function onSuspendClick (event) {
 	chrome.tabs.get(id, (tab) => {
 		list.set(tab.id, { 'suspended': true, 'pinned': false });
 		chrome.tabs.remove(id, () => {
-			$this.closest('li.tab-item').addClass('suspended');
+			$this.closest('li.tab-item').addClass(c.SUSPENDED_CLASS);
 		});
 	});
 }
@@ -90,7 +90,7 @@ function onTitleClick (event) {
 		return false;
 	}
 
-	if ($this.closest('li.tab-item').hasClass('suspended')) {
+	if ($this.closest('li.tab-item').hasClass(c.SUSPENDED_CLASS)) {
 		tab = list.get(id);
 		createTab(tab);
 	}
@@ -139,7 +139,8 @@ function onResetFilter (event) {
 		$(this).removeClass(c.FILTER_HIDE_CLASS);
 	});
 
-	$filter.val('').focus();
+	$filter.val('');
+	$filter.focus();
 	$resetFilter.hide();
 	if ($noResults.length) {
 		$noResults.remove();

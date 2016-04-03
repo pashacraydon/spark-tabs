@@ -3,6 +3,7 @@
 import fixture from '../test/fixtures/tablist.js';
 
 import '../src/js/popup.js';
+import * as c from '../src/js/constants.js';
 import { keys, radix, FILTER_HIDE_CLASS, SELECTED_CLASS, SUSPEND_AFTER_MINS_DEFAULT } from '../src/js/constants.js';
 import { Tablist, Tab } from '../src/js/models';
 
@@ -44,23 +45,25 @@ describe("Popup Modal", function () {
   describe("onSuspendClick()", function () {
 
     it("should get the tab.", function () {
-      $('.js-tabs-list li:first .js-suspend')[0].click();
+      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
       chai.assert.equal(chrome.tabs.get.getCall(0).args[0], '1590');
     });
 
     it("should remove the tab.", function () {
-      $('.js-tabs-list li:first .js-suspend')[0].click();
-      chrome.tabs.get.yield(fixture[0]);
-      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1234');
+      chrome.tabs.get.reset();
+      chrome.tabs.remove.reset();
+      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
+      chrome.tabs.get.yield(fixture[2]);
+      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1558');
     });
 
     it("should not remove the tab from the list.", function () {
       chrome.tabs.get.reset();
       chrome.tabs.remove.reset();
-      $('.js-tabs-list li:first .js-suspend')[0].click();
-      chrome.tabs.get.yield(fixture[0]);
+      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
+      chrome.tabs.get.yield(fixture[2]);
       chrome.tabs.remove.yield();
-      chai.assert.isTrue(this.list.get(fixture[0].id) instanceof Tab);
+      chai.assert.isTrue(this.list.get(fixture[2].id) instanceof Tab);
     });
 
   });
@@ -103,7 +106,7 @@ describe("Popup Modal", function () {
 
     it("should create a new tab if it is suspended", function () {
       let expectedUrl = "https://www.npmjs.com/package/sinon-chrome";
-      $('.js-tabs-list li.tab-item').addClass('suspended');
+      $('.js-tabs-list li.tab-item').addClass(c.SUSPENDED_CLASS);
       $('.js-tabs-list li.tab-item .js-title')[0].click();
       let callback = chrome.tabs.create.getCall(0).args[1];
       sinon.assert.calledWith(chrome.tabs.create, { 'url': expectedUrl }, callback);
@@ -111,5 +114,122 @@ describe("Popup Modal", function () {
 
   });
 
+  describe("onBodyKeyup()", function () {
+
+    beforeEach(function() {
+      this.$tabLi = $('.js-tabs-list li.tab-item');
+    });
+
+    afterEach(function() {
+      $('.js-tabs-list').find('.' + c.SELECTED_CLASS).removeClass(c.SELECTED_CLASS);
+    });
+
+    it("should select next item down in the list on ↓ key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.DOWN_KEY }));
+      let $selectedItem = $('.js-tabs-list').find('li.' + c.SELECTED_CLASS);
+      let index = this.$tabLi.index($selectedItem);
+      chai.assert.equal(index, 1);
+    });
+
+    it("should select next item down in the list on J key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.J_KEY }));
+      let $selectedItem = $('.js-tabs-list').find('li.' + c.SELECTED_CLASS);
+      let index = this.$tabLi.index($selectedItem);
+      chai.assert.equal(index, 1);
+    });
+
+    it("should select next item up in the list on ↑ key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.UP_KEY }));
+      let $selectedItem = $('.js-tabs-list').find('li.' + c.SELECTED_CLASS);
+      let index = this.$tabLi.index($selectedItem);
+      chai.assert.equal(index, 0);
+    });
+
+    it("should select next item up in the list on K key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
+      let $selectedItem = $('.js-tabs-list').find('li.' + c.SELECTED_CLASS);
+      let index = this.$tabLi.index($selectedItem);
+      chai.assert.equal(index, 0);
+    });
+
+    it("should pin selected items on the P key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.P_KEY }));
+      let callback = chrome.tabs.update.getCall(0).args[2];
+      sinon.assert.calledWith(chrome.tabs.update, 1558, { 'pinned': true}, callback);
+    });
+
+    it("should throw out selected tabs on the T key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.T_KEY }));
+      let callback = this.removeSpy.getCall(0).args[1];
+      sinon.assert.calledWith(this.removeSpy, 1558, callback);
+    });
+
+    it("should close selected items on the C key.", function () {
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
+      $('body').trigger($.Event('keyup', { keyCode: c.keys.C_KEY }));
+      chrome.tabs.get.yield(fixture[2]);
+      let callback = chrome.tabs.remove.getCall(0).args[1];
+      sinon.assert.calledWith(chrome.tabs.remove, 1558, callback);
+    });
+
+  });
+
+  describe("onResetFilter()", function () {
+
+    beforeEach(function() {
+      $('[type="search"]').val('python');
+    });
+
+    afterEach(function() {
+      $('[type="search"]').val('');
+    });
+
+    it("should remove text in the filter input field.", function () {
+      $('.js-reset-filter')[0].click();
+      chai.assert.equal($('[type="search"]').val(), '');
+    });
+
+    it("should unhide all items.", function () {
+      $('.js-reset-filter')[0].click();
+      chai.assert.equal($('.' + FILTER_HIDE_CLASS).length, 0);
+    });
+
+    it("should remove no results messaging.", function () {
+      $('[type="search"]').val('zzzzzzzzzz').trigger('keyup');
+      chai.assert.equal($('.no-results').length, 1);
+      $('.js-reset-filter')[0].click();
+      chai.assert.equal($('.no-results').length, 0);
+    });
+  });
+
+  describe("onCloseAllTabsClick()", function () {
+
+    it("should close (suspend) all tabs but the first one.", function () {
+      $('.js-tabs-list').find('.' + c.SUSPENDED_CLASS).removeClass(c.SUSPENDED_CLASS);
+      chrome.tabs.get.reset();
+      chrome.tabs.remove.reset();
+      $('.js-close-all-tabs')[0].click();
+
+      chrome.tabs.get.yield(fixture[1]);
+      chrome.tabs.remove.yield(fixture[1]);
+
+      chrome.tabs.get.onCall(1).stub.yield(fixture[2]);
+      chrome.tabs.remove.onCall(1).stub.yield(fixture[2]);
+
+      chrome.tabs.get.onCall(2).stub.yield(fixture[3]);
+      chrome.tabs.remove.onCall(2).stub.yield(fixture[3]);
+
+      chrome.tabs.get.onCall(3).stub.yield(fixture[4]);
+      chrome.tabs.remove.onCall(3).stub.yield(fixture[4]);
+
+      chai.assert.equal($('.js-tabs-list li.tab-item').not('.' + c.SUSPENDED_CLASS).length, 1);
+    });
+
+  });
+
 });
+
+
 

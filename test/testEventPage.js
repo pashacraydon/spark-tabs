@@ -45,11 +45,11 @@ describe("Event callbacks", function () {
     it("should update list settings on suspendAfterMins storage changes.", function () {
       let changes = {};
       changes.suspendAfterMinds = {
-        'newValue': 20
+        'newValue': 40
       };
 
       chrome.storage.onChanged.trigger(changes);
-      chai.assert.equal(window.list.settings.suspendAfterMins, 20);
+      chai.assert.equal(window.list.settings.suspendAfterMins, 40);
     });
 
     it("should update list settings on whitelist storage changes.", function () {

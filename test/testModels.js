@@ -92,7 +92,7 @@ describe("Tablist", function () {
    it("should get the tab if it has expired.", function () {
       var tab = this.list.at(0),
         callback;
-      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.set(tab.id, { 'updated': addMinutes(41) });
       this.list.suspend.call(this.list, tab);
       callback = chrome.tabs.get.getCall(0).args[1];
       sinon.assert.calledWith(chrome.tabs.get, 1590, callback);
@@ -101,7 +101,7 @@ describe("Tablist", function () {
     it("should remove the tab if it has expired.", function () {
       var tab = this.list.at(0),
         callback;
-      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.set(tab.id, { 'updated': addMinutes(41) });
       this.list.suspend.call(this.list, tab);
       chrome.tabs.get.yield(tab);
       sinon.assert.calledWith(chrome.tabs.remove, 1590);
@@ -109,7 +109,7 @@ describe("Tablist", function () {
 
     it("should add the tab back to the list.", function (done) {
       var tab = this.list.at(0);
-      this.list.set(tab.id, { 'updated': addMinutes(21) });
+      this.list.set(tab.id, { 'updated': addMinutes(41) });
       this.list.suspend.call(this.list, tab);
       chrome.tabs.get.yield(tab);
 
