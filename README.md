@@ -10,7 +10,7 @@ Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs
 
 * Tabs are ordered by recent activity
 * Tabs are automatically closed after idling for set number of minutes (optional, default is 40 minutes)
-** These tabs are saved in a 'dimmed' state in the dropdown
+    * These tabs are saved in a 'dimmed' state in the dropdown
 * Whitelist urls so their tabs won't automatically close after idling (optional)
 * Close all tabs with one click
 * Find tabs quickly by filtering them by keyword
