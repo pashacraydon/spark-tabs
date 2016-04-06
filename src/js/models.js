@@ -103,7 +103,8 @@ class Tablist {
 
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
-			prevActiveTab = this.prevActiveTab({ 'get': true });
+			prevActiveTab = this.prevActiveTab({ 'get': true }),
+			limiter = this.settings.suspendAfterMins;
 
 		if (tab.whitelisted) return false;
 		if (tab.suspended) return false;
@@ -111,17 +112,23 @@ class Tablist {
 		if (this.settings.suspendAfterMins === "never") return false;
 		if (prevActiveTab) return false;
 
-		if ((timeAgo.mins >= this.settings.suspendAfterMins) || (timeAgo.hours >= 1)) {
-			chrome.tabs.get(tab.id, (tabItem) => {
-				if (chrome.runtime.lastError) {
-					return false;
-				}
-				else {
-					this.set(tab.id, { 'suspended': true, 'pinned': false });
-					chrome.tabs.remove(tabItem.id);
-				}
-			});
+		if ((limiter === 1) || (limiter === 3)) {
+			if ((limiter === 1) && (timeAgo.hours < 1)) return false;
+			if ((limiter === 3) && (timeAgo.hours < 3)) return false;
 		}
+		else {
+			if ((timeAgo.mins < limiter) && (timeAgo.hours < 1)) return false;
+		}
+
+		chrome.tabs.get(tab.id, (tabItem) => {
+			if (chrome.runtime.lastError) {
+				return false;
+			}
+			else {
+				this.set(tab.id, { 'suspended': true, 'pinned': false });
+				chrome.tabs.remove(tabItem.id);
+			}
+		});
 	}
 
 	set(tabId, newAttrs) {
