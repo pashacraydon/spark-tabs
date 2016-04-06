@@ -176,6 +176,36 @@ describe("Tablist", function () {
         chai.assert.equal(time_ago.hours, 1);
       });
 
+      it("should return the hours ago of a tabs updated attribute under 1 hour.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(59) });
+        time_ago = this.list.getTimeAgo(tab);
+
+        chai.assert.equal(time_ago.hours, 0);
+      });
+
+      it("should return the hours ago of a tabs updated attribute between 1 and 2 hours.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(100) });
+        time_ago = this.list.getTimeAgo(tab);
+
+        chai.assert.equal(time_ago.hours, 1);
+      });
+
+      it("should return the hours ago of a tabs updated attribute between 2 and 3 hours.", function () {
+        let tab = this.list.at(0),
+          time_ago;
+
+        this.list.set(tab.id, { 'updated': addMinutes(140) });
+        time_ago = this.list.getTimeAgo(tab);
+
+        chai.assert.equal(time_ago.hours, 2);
+      });
+
       it("should return a friendly formatted version of the minutes ago.", function () {
         let tab = this.list.at(0),
           time_ago;

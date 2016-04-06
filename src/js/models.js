@@ -136,7 +136,7 @@ class Tablist {
 		let now = new Date(),
 			diffMs = Math.abs(tab.updated - now),
 			minsAgo = Math.round(((diffMs % 86400000) % 3600000) / 60000),
-			hoursAgo = Math.round((diffMs % 86400000) / 3600000),
+			hoursAgo = Math.floor((diffMs % 86400000) / 3600000),
 			time = '';
 
 		function friendlyTime() {
