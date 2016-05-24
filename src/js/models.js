@@ -15,6 +15,10 @@ class Tab {
 		this.el = '';
 		this.updated = null;
 	}
+
+	set(attrs) {
+		$.extend(this, attrs);
+	}
 }
 
 
@@ -126,7 +130,7 @@ class Tablist {
 			}
 			else {
 				this.set(tab.id, { 'suspended': true, 'pinned': false });
-				chrome.tabs.remove(tabItem.id);
+				chrome.tabs.remove(tab.id);
 			}
 		});
 	}
@@ -139,6 +143,12 @@ class Tablist {
 		}
 	}
 
+	/*
+		Get the amount of time in minutes and hours the time
+		a tab was last updated (clicked on)
+
+		@param tab {model}
+	*/
 	getTimeAgo(tab) {
 		let now = new Date(),
 			diffMs = Math.abs(tab.updated - now),
@@ -191,8 +201,22 @@ class Tablist {
 		return false;
 	}
 
+	/*
+		Get the total time a tab has spent in an 'active' state
+		@param tab {model}
+	*/
+	setActiveTime() {
+		let prevActiveTab = this.prevActiveTab({ 'get': true }),
+			now = new Date(),
+			ms = now.getTime() - prevActiveTab.updated.getTime(),
+			minutesActive = ms / 60000,
+			activeTime = prevActiveTab.activeTime ? (prevActiveTab.activeTime + minutesActive) : minutesActive;
+
+		prevActiveTab.activeTime = activeTime;
+	}
+
 	update(updatedTab, options) {
-		let tabItem = this.get(updatedTab.id);
+		var tabItem = this.get(updatedTab.id);
 
 		options = options || {};
 
@@ -200,12 +224,19 @@ class Tablist {
 
 		if (tabItem) {
 			let index = this.tabs.indexOf(tabItem);
+			this.setActiveTime();
 			this.tabs[index] = $.extend(
 				tabItem,
 				updatedTab,
-				{ 'el': template(updatedTab) },
-				{ 'updated': new Date() },
-				{ 'time_ago': 0 }
+				{ 
+					'el': template(updatedTab) 
+				},
+				{ 
+					'updated': new Date() 
+				},
+				{ 
+					'time_ago': 0 
+				}
 			);
 
 			$.extend(this.tabs[index],

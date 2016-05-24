@@ -8,6 +8,29 @@ function addMinutes(minutes) {
     return new Date(date.getTime() + minutes*60000);
 }
 
+describe("Tab", function () {
+
+  beforeEach(function() {
+    this.tab = new Tab
+  });
+
+  afterEach(function() {
+    this.tab.destroy();
+  });
+
+  describe("set()", function () {
+
+    it("should set the arguments on it's attributes.", function () {
+      this.tab.set({ 'suspended': true, 'pinned': false });
+      chai.assert.equal(this.tab.suspended, true);
+      chai.assert.equal(this.tab.pinned, false);
+    });
+
+  });
+
+});
+
+
 describe("Tablist", function () {
 
   beforeEach(function() {

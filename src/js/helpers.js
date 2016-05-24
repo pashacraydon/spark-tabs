@@ -14,7 +14,7 @@ function template (data) {
 		faviconUrl = data.faviconRenderUrl ? '<span class="favicon">' +
 		  '<img class="favicon" src="' + data.faviconRenderUrl + '" />' +
 		  '</span>' : '',
-		timeAgoSpan = (data.time_ago === '') ? '' : '<span class="time-ago">' + data.time_ago + '</span>';
+		timeAgoSpan = (data.activeTime === '') ? '' : '<span class="time-ago">' + data.activeTime + '</span>';
 
 	return '<li id="' + data.id + '" class="' + suspendedClass + ' tab-item ' + whitelistedClass + '">' +
 		faviconUrl +
