@@ -299,7 +299,7 @@ class Tablist {
 					}
 				}
 				else {
-					chrome.tabs.remove(tab.get('id'), callback);
+					chrome.tabs.remove(tab.id, callback);
 				}
 			});
 		}

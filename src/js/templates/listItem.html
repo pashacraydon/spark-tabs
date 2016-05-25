@@ -4,11 +4,13 @@
 		<img class="favicon" src="<%= faviconRenderUrl %>" />
 	</span>
 	<% } %>
+	<% if (typeof title != 'undefined') { %>
 	<span class="title">
 		<a href="<%= url %>" class="js-title">
 			<%= title %>
 		</a>
 	</span>
+	<% } %>
 	<span class="time-ago">
 		<% if (typeof active_time_friendly != 'undefined') { %>
 			<%= active_time_friendly %> | 
@@ -23,14 +25,14 @@
 				<img src="<% chrome.extension.getURL('assets/bin.png') %>" />
 			</a>
 		</li>
-		<% if ((typeof pinned != 'undefined' && pinned) || (typeof suspended != 'undefined' && suspended)) { %>
+		<% if ((typeof pinned != 'undefined') || (typeof suspended != 'undefined')) { %>
 		<li>
 			<a href="#" class="js-pin pin-tab" data-tooltip="Pin tab | p">
 				<img src="<% chrome.extension.getURL('assets/pin.png') %>" />
 			</a>
 		</li>
 		<% } %>
-		<% if (typeof suspended != 'undefined' && suspended) { %>
+		<% if (typeof suspended != 'undefined') { %>
 		<li>
 			<a href="#" class="js-suspend suspend-tab" data-tooltip="Close tab | c">
 				<img src="<% chrome.extension.getURL('assets/close.png') %>" />

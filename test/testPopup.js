@@ -45,6 +45,7 @@ describe("Popup Modal", function () {
   describe("onSuspendClick()", function () {
 
     it("should get the tab.", function () {
+      console.log($('.js-tabs-list li.tab-item:first').html());
       $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
       chai.assert.equal(chrome.tabs.get.getCall(0).args[0], '1590');
     });
