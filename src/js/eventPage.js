@@ -38,12 +38,12 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 		onTabUpdated(tab);
 	});
 
-	list.prevActiveTab({ 'set': activeInfo.tabId });
+	list.prevActiveTab().add(activeInfo.tabId);
 
 	setTimeout(() => {
-		let prevActiveTab = list.prevActiveTab({ 'get': true });
-		if (prevActiveTab) {
-			list.set(prevActiveTab.get('id'), { 'updated': new Date() });
+		let tab = list.prevActiveTab().get();
+		if (tab) {
+			list.set(tab.get('id'), { 'updated': new Date() });
 		}
 	}, 600);
 });

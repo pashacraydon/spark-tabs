@@ -10,7 +10,12 @@ class Tab {
 		this.attributes = _.merge({
 			'updated': new Date(),
 			'suspended': false,
-			'whitelisted': false
+			'whitelisted': false,
+			'assets': {
+				'binPngUrl': chrome.extension.getURL('assets/bin.png'),
+				'pinPngUrl': chrome.extension.getURL('assets/pin.png'),
+				'closePngUrl': chrome.extension.getURL('assets/close.png')
+			}
 		}, attrs);
 
 		this.set({ 'el': listItemTpl(this.attributes) });
@@ -108,20 +113,29 @@ class Tablist {
 		return this.tabs[index];
 	}
 
-	prevActiveTab(options) {
-		if (options.set) {
-			this.history.push(options.set);
+	prevActiveTab() {
+		function add(tabId) {
+			this.history.push(tabId);
 		}
-		else if (options.get) {
+
+		function get() {
 			let prevTabIndex = (this.history.length === 1) ? (this.history.length - 1) : (this.history.length - 2),
 				prevTabId = this.history[prevTabIndex];
 			return this.get(prevTabId);
 		}
+
+		return {
+			'get': $.proxy(get, this),
+			'add': $.proxy(add, this)
+		}
 	}
 
+	/*
+		Determines if a tab should be closed but stored in the dropdown
+	*/
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
-			prevActiveTab = this.prevActiveTab({ 'get': true }),
+			prevActiveTab = this.prevActiveTab().get(),
 			limiter = this.settings.suspendAfterMins;
 
 		if (tab.whitelisted) return false;
@@ -190,17 +204,17 @@ class Tablist {
 	}
 
 	/*
-		Get the total time a tab has spent in an 'active' state
-		@param tab {model}
+		Get the total time a tab has spent in an 'active' state,
+		this is the 'previously' active tab after an 'update' event.
 	*/
 	activeTime() {
-		var prevActiveTab = this.prevActiveTab({ 'get': true });
-		if (!prevActiveTab) return false;
+		let tab = this.prevActiveTab().get();
+		if (!tab) return false;
 
 		let now = new Date(),
-			ms = now.getTime() - prevActiveTab.get('updated').getTime(),
+			ms = now.getTime() - tab.get('updated').getTime(),
 			minutesActive = ms / 60000,
-			minutes = prevActiveTab.get('active_time_mins') ? (prevActiveTab.get('active_time_mins') + minutesActive) : minutesActive,
+			minutes = tab.get('active_time_mins') ? (tab.get('active_time_mins') + minutesActive) : minutesActive,
 			hours = minutes / 60;
 
 		function friendlyTime() {
@@ -210,16 +224,24 @@ class Tablist {
 				time = Math.floor(hours) + 'h ';
 			}
 
-			if (minutes) {
-				time += minutes + 'm';
+			if (minutes >= 1) {
+				time += Math.floor(minutes) + 'm';
 			}
 
 			return time;
 		}
 
+		function update() {
+			tab.set({
+				'active_time_mins': minutes,
+				'active_time_friendly': friendlyTime()
+			});
+		}
+
 		return {
 			'mins': minutes,
-			'friendly': friendlyTime()
+			'friendly': friendlyTime(),
+			'update': update
 		}
 	}
 
@@ -249,6 +271,9 @@ class Tablist {
 		return false;
 	}
 
+	/*
+		Updates occur on all chrome listener events in the eventPage
+	*/
 	update(updatedTab, options) {
 		var tabItem = this.get(updatedTab.id);
 
@@ -260,10 +285,9 @@ class Tablist {
 
 			tab.set(tabItem);
 			tab.set(updatedTab);
+			this.activeTime().update();
 
 			tab.set({
-				'active_time_mins': this.activeTime().mins,
-				'active_time_friendly': this.activeTime().friendly,
 				'whitelisted': this.isWhitelisted(tab),
 				'updated': new Date(),
 				'time_ago': 0

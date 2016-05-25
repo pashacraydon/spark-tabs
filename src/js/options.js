@@ -91,7 +91,7 @@ $(document).ready(() => {
   $errorMsg = $('.error-msg');
   $whitelistRegion = $('.js-whitelisted-region');
 
-  $('.icon').prepend('<img src="' + chrome.extension.getURL('assets/spark48.png') + '" />')
+  $('.icon').prepend('<img src="' + chrome.extension.getURL('assets/icon48.png') + '" />')
 
   chrome.storage.sync.get('suspendAfterMins', (items) => {
     let suspendAfter = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
