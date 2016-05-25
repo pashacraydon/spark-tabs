@@ -6,20 +6,31 @@ import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 class Tab {
 	constructor (attrs) {
-		$.extend(this, attrs);
-		this.updated = new Date();
-		this.el = listItemTpl(this);
-		this.suspended = false;
-		this.whitelisted = false;
+
+		this.attributes = _.merge({
+			'updated': new Date(),
+			'suspended': false,
+			'whitelisted': false
+		}, attrs);
+
+		this.set({ 'el': listItemTpl(this.attributes) });
 	}
 
 	destroy() {
-		this.el = '';
-		this.updated = null;
+		this.attributes = {};
 	}
 
-	set(attrs) {
-		$.extend(this, attrs);
+	set(changeset) {
+		_.merge(this.attributes, changeset);
+	}
+
+	get(attr) {
+		return this.attributes[attr];
+	}
+
+	has(attr) {
+		if (this.attributes[attr]) return true;
+		return false;
 	}
 }
 
@@ -35,24 +46,25 @@ class Tablist {
 	}
 
 	render() {
-		let elements = '',
-			deferred = $.Deferred();
+		let deferred = $.Deferred();
 
 		this.sort();
 
 		chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
 			if (!queryTabs[0]) return false;
-			var currWindowId = queryTabs[0].windowId;
+			var currWindowId = queryTabs[0].windowId,
+				elements = '';
 
 			$.each(this.tabs, (count, tab) => {
 				if (!tab) return;
-				if (tab.windowId === currWindowId) {
+				if (tab.get('windowId') === currWindowId) {
 					let timeAgo = this.getTimeAgo(tab);
-					tab.time_ago = timeAgo.friendly;
-					tab.el = listItemTpl(tab);
-					elements += tab.el;
+					tab.set({ 'time_ago': timeAgo.friendly });
+					tab.set({ 'el': listItemTpl(tab.attributes) });
+					elements += tab.get('el');
 				}
 			});
+
 			deferred.resolve(elements);
 		});
 
@@ -68,7 +80,7 @@ class Tablist {
 	get(id) {
 		if (!this.tabs) return;
 		let found = $.grep(this.tabs, (item) => {
-			return (item.id === id);
+			return (item.get('id') === id);
 		});
 
 		return found[0];
@@ -131,8 +143,8 @@ class Tablist {
 				return false;
 			}
 			else {
-				this.set(tab.id, { 'suspended': true, 'pinned': false });
-				chrome.tabs.remove(tab.id);
+				this.set(tab.get('id'), { 'suspended': true, 'pinned': false });
+				chrome.tabs.remove(tab.get('id'));
 			}
 		});
 	}
@@ -141,7 +153,7 @@ class Tablist {
 		let tabItem = this.get(tabId);
 		if (tabItem) {
 			var index = this.tabs.indexOf(tabItem);
-			$.extend(this.tabs[index], newAttrs);
+			this.tabs[index].set(newAttrs);
 		}
 	}
 
@@ -153,7 +165,7 @@ class Tablist {
 	*/
 	getTimeAgo(tab) {
 		let now = new Date(),
-			diffMs = Math.abs(tab.updated - now),
+			diffMs = Math.abs(tab.get('updated') - now),
 			minsAgo = Math.round(((diffMs % 86400000) % 3600000) / 60000),
 			hoursAgo = Math.floor((diffMs % 86400000) / 3600000),
 			time = '';
@@ -182,21 +194,24 @@ class Tablist {
 		@param tab {model}
 	*/
 	activeTime() {
-		let prevActiveTab = this.prevActiveTab({ 'get': true }),
-			now = new Date(),
-			ms = now.getTime() - prevActiveTab.updated.getTime(),
+		var prevActiveTab = this.prevActiveTab({ 'get': true });
+		if (!prevActiveTab) return false;
+
+		let now = new Date(),
+			ms = now.getTime() - prevActiveTab.get('updated').getTime(),
 			minutesActive = ms / 60000,
-			minutes = prevActiveTab.active_time ? (prevActiveTab.active_time + minutesActive) : minutesActive,
-			hours = minutes / 60,
-			time = '';
+			minutes = prevActiveTab.get('active_time_mins') ? (prevActiveTab.get('active_time_mins') + minutesActive) : minutesActive,
+			hours = minutes / 60;
 
 		function friendlyTime() {
+			let time = '';
+
 			if (hours >= 1) {
 				time = Math.floor(hours) + 'h ';
 			}
 
-			if (minutes >= 1) {
-				time += Math.floor(minutes) + 'm ago';
+			if (minutes) {
+				time += minutes + 'm';
 			}
 
 			return time;
@@ -204,18 +219,17 @@ class Tablist {
 
 		return {
 			'mins': minutes,
-			'hours': hours,
 			'friendly': friendlyTime()
 		}
 	}
 
 	buildFaviconUrl(tab) {
-		if (tab.favIconUrl) {
-			return tab.favIconUrl;
+		if (tab.has('favIconUrl')) {
+			return tab.get('favIconUrl');
 		}
 
-		if (tab.url) {
-			let urlStr = tab.url.split('/'),
+		if (tab.get('url')) {
+			let urlStr = tab.get('url').split('/'),
 				urlArr = [],
 				favUrl;
 			urlArr.push(urlStr[0]);
@@ -226,9 +240,9 @@ class Tablist {
 
 	isWhitelisted(tab) {
 		if (!this.settings.whitelist.length) return false;
-		if (tab.whitelisted) return true;
-		if (tab.url) {
-			if (new RegExp(this.settings.whitelist.join("|")).test(tab.url)) {
+		if (tab.get('whitelisted')) return true;
+		if (tab.get('url')) {
+			if (new RegExp(this.settings.whitelist.join("|")).test(tab.get('url'))) {
 			   return true;
 			}
 		}
@@ -238,30 +252,26 @@ class Tablist {
 	update(updatedTab, options) {
 		var tabItem = this.get(updatedTab.id);
 
-		options = options || {};
-
-		updatedTab.faviconRenderUrl = this.buildFaviconUrl(updatedTab);
+		options || (options = {});
 
 		if (tabItem) {
-			let index = this.tabs.indexOf(tabItem);
-			this.tabs[index].active_time = this.activeTime().friendly;
-			this.tabs[index] = $.extend(
-				tabItem,
-				updatedTab,
-				{ 
-					'el': listItemTpl(updatedTab) 
-				},
-				{ 
-					'updated': new Date() 
-				},
-				{ 
-					'time_ago': 0 
-				}
-			);
+			let index = this.tabs.indexOf(tabItem),
+				tab = this.tabs[index];
 
-			$.extend(this.tabs[index],
-				{ 'whitelisted': this.isWhitelisted(this.tabs[index])
+			tab.set(tabItem);
+			tab.set(updatedTab);
+
+			tab.set({
+				'active_time_mins': this.activeTime().mins,
+				'active_time_friendly': this.activeTime().friendly,
+				'whitelisted': this.isWhitelisted(tab),
+				'updated': new Date(),
+				'time_ago': 0
 			});
+
+			tab.set({ 'faviconRenderUrl': this.buildFaviconUrl(tab) })
+			tab.set({ 'el': tab });
+
 
 			if (!options.ignoreExtraActions) {
 				$.each(this.tabs, (count, tab) => {
@@ -289,7 +299,7 @@ class Tablist {
 					}
 				}
 				else {
-					chrome.tabs.remove(tab.id, callback);
+					chrome.tabs.remove(tab.get('id'), callback);
 				}
 			});
 		}
@@ -297,7 +307,7 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			return b.updated.getTime() - a.updated.getTime();
+			return b.get('updated').getTime() - a.get('updated').getTime();
 		}
 		this.tabs.sort(sortByDate);
 	}

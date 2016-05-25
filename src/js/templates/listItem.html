@@ -9,11 +9,14 @@
 			<%= title %>
 		</a>
 	</span>
-	<% if (typeof active_time != 'undefined') { %>
 	<span class="time-ago">
-		<%= active_time %>
+		<% if (typeof active_time_friendly != 'undefined') { %>
+			<%= active_time_friendly %> | 
+		<% } %>
+		<% if (typeof time_ago != 'undefined') { %>
+			<%= time_ago %>
+		<% } %>
 	</span>
-	<% } %>
 	<ul class="link-options">
 		<li>
 			<a href="#" class="js-close-tab close-tab" data-tooltip="Throw out tab | t">

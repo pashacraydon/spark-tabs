@@ -43,7 +43,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 	setTimeout(() => {
 		let prevActiveTab = list.prevActiveTab({ 'get': true });
 		if (prevActiveTab) {
-			list.set(prevActiveTab.id, { 'updated': new Date() });
+			list.set(prevActiveTab.get('id'), { 'updated': new Date() });
 		}
 	}, 600);
 });
@@ -58,7 +58,7 @@ chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 	if (chrome.runtime.lastError) return false;
 	var tab = list.get(tabId);
-	if (tab && !tab.suspended) {
+	if (tab && !tab.get('suspended')) {
 		list.remove(tabId);
 	}
 });
@@ -85,7 +85,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") {
 		chrome.tabs.query({}, (tabs) => {
 			$.each(tabs, (count, tab) => {
-				tab.faviconRenderUrl = list.buildFaviconUrl(tab);
 				onTabUpdated(tab);
 			});
 		});
@@ -96,8 +95,8 @@ chrome.windows.onRemoved.addListener(function (windowId) {
 	chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
 		$.each(list.tabs, (count, tab) => {
 			if (!tab) return;
-			if (tab.windowId === windowId) {
-				list.remove(tab.id);
+			if (tab.get('windowId') === windowId) {
+				list.remove(tab.get('id'));
 			}
 		});
 	});

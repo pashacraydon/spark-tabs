@@ -36,7 +36,10 @@ module.exports = {
       },
       {
         test: /\.html$/,
-        loader: 'raw'
+        loader: "underscore-template-loader",
+        query: {
+            engine: "lodash",
+        }
       },
       {
         test: /\.png$/,

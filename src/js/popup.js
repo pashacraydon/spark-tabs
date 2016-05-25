@@ -70,10 +70,10 @@ function onSuspendClick (event) {
 
 function createTab (tab) {
 	chrome.tabs.create({
-		'url': tab.url
+		'url': tab.get('url')
 	}, function () {
 		list.remove(tab.id, function () {
-			$list.find('#' + tab.id).remove();
+			$list.find('#' + tab.get('id')).remove();
 		});
 	});
 }

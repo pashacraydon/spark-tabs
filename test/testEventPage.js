@@ -22,7 +22,7 @@ describe("Event callbacks", function () {
     });
 
     it("should be built with favicon urls.", function () {
-      chai.assert.equal(window.list.at(0).faviconRenderUrl, "https://assets-cdn.github.com/favicon.ico");
+      chai.assert.equal(window.list.at(0).get('faviconRenderUrl'), "https://assets-cdn.github.com/favicon.ico");
     });
 
   });
@@ -74,8 +74,8 @@ describe("Event callbacks", function () {
 
     it("should remove tab from the list.", function () {
       let tab = window.list.first();
-      chrome.tabs.onRemoved.trigger(tab.id);
-      chai.assert.notEqual(window.list.first().id, tab.id);
+      chrome.tabs.onRemoved.trigger(tab.get('id'));
+      chai.assert.notEqual(window.list.first().get('id'), tab.get('id'));
     });
 
   });
@@ -83,7 +83,7 @@ describe("Event callbacks", function () {
   describe("chrome.tabs.onReplaced()", function () {
 
     it("should remove the replaced tab from the list.", function () {
-      chai.assert.equal(window.list.get(1590).id, 1590);
+      chai.assert.equal(window.list.get(1590).get('id'), 1590);
       chrome.tabs.onReplaced.trigger(1234, 1590);
       chai.assert.equal(window.list.get(1590), undefined);
     });
@@ -96,7 +96,7 @@ describe("Event callbacks", function () {
         'id': 1234
       });
 
-      chai.assert.equal(window.list.get(1234).url, 'http://www.bitly.com');
+      chai.assert.equal(window.list.get(1234).get('url'), 'http://www.bitly.com');
     });
 
   });
