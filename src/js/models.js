@@ -275,7 +275,8 @@ class Tablist {
 		Updates occur on all chrome listener events in the eventPage
 	*/
 	update(updatedTab, options) {
-		var tabItem = this.get(updatedTab.id);
+		var tabItem = this.get(updatedTab.id),
+			activeTime = this.activeTime();
 
 		options || (options = {});
 
@@ -285,7 +286,10 @@ class Tablist {
 
 			tab.set(tabItem);
 			tab.set(updatedTab);
-			this.activeTime().update();
+
+			if (activeTime) {
+				activeTime.update();
+			}
 
 			tab.set({
 				'whitelisted': this.isWhitelisted(tab),
