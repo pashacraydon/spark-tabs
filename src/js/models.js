@@ -1,6 +1,6 @@
 'use strict';
 
-import { buildFaviconUrl, template } from './helpers.js';
+import listItemTpl from './templates/listItem.html'
 import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 
@@ -8,7 +8,9 @@ class Tab {
 	constructor (attrs) {
 		$.extend(this, attrs);
 		this.updated = new Date();
-		this.el = template(this);
+		this.el = listItemTpl(this);
+		this.suspended = false;
+		this.whitelisted = false;
 	}
 
 	destroy() {
@@ -47,7 +49,7 @@ class Tablist {
 				if (tab.windowId === currWindowId) {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.time_ago = timeAgo.friendly;
-					tab.el = template(tab);
+					tab.el = listItemTpl(tab);
 					elements += tab.el;
 				}
 			});
@@ -175,6 +177,38 @@ class Tablist {
 		}
 	}
 
+	/*
+		Get the total time a tab has spent in an 'active' state
+		@param tab {model}
+	*/
+	activeTime() {
+		let prevActiveTab = this.prevActiveTab({ 'get': true }),
+			now = new Date(),
+			ms = now.getTime() - prevActiveTab.updated.getTime(),
+			minutesActive = ms / 60000,
+			minutes = prevActiveTab.active_time ? (prevActiveTab.active_time + minutesActive) : minutesActive,
+			hours = minutes / 60,
+			time = '';
+
+		function friendlyTime() {
+			if (hours >= 1) {
+				time = Math.floor(hours) + 'h ';
+			}
+
+			if (minutes >= 1) {
+				time += Math.floor(minutes) + 'm ago';
+			}
+
+			return time;
+		}
+
+		return {
+			'mins': minutes,
+			'hours': hours,
+			'friendly': friendlyTime()
+		}
+	}
+
 	buildFaviconUrl(tab) {
 		if (tab.favIconUrl) {
 			return tab.favIconUrl;
@@ -201,20 +235,6 @@ class Tablist {
 		return false;
 	}
 
-	/*
-		Get the total time a tab has spent in an 'active' state
-		@param tab {model}
-	*/
-	setActiveTime() {
-		let prevActiveTab = this.prevActiveTab({ 'get': true }),
-			now = new Date(),
-			ms = now.getTime() - prevActiveTab.updated.getTime(),
-			minutesActive = ms / 60000,
-			activeTime = prevActiveTab.activeTime ? (prevActiveTab.activeTime + minutesActive) : minutesActive;
-
-		prevActiveTab.activeTime = activeTime;
-	}
-
 	update(updatedTab, options) {
 		var tabItem = this.get(updatedTab.id);
 
@@ -224,12 +244,12 @@ class Tablist {
 
 		if (tabItem) {
 			let index = this.tabs.indexOf(tabItem);
-			this.setActiveTime();
+			this.tabs[index].active_time = this.activeTime().friendly;
 			this.tabs[index] = $.extend(
 				tabItem,
 				updatedTab,
 				{ 
-					'el': template(updatedTab) 
+					'el': listItemTpl(updatedTab) 
 				},
 				{ 
 					'updated': new Date() 

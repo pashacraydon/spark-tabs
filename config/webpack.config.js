@@ -8,11 +8,11 @@ module.exports = {
     eventpage: ['./eventPage.js'],
     models: ['./models.js'],
     constants: ['./constants.js'],
-    helpers: ['./helpers.js'],
     popup: ['./popup.js'],
     options: ['./options.js'],
     common: [
       'jquery',
+      'lodash',
       'tooltip'
     ]
   },
@@ -40,12 +40,15 @@ module.exports = {
         loader: 'raw'
       },
       {
-        test: /\.html$/,
-        loader: 'raw'
-      },
-      {
         test: /\.png$/,
         loader: 'url?limit=10000&name=assets/[name].[ext]'
+      },
+      {
+        test: /\.html$/,
+        loader: "underscore-template-loader",
+        query: {
+            engine: "lodash",
+        }
       }
     ],
     // noParse: /\/node_modules/
@@ -61,6 +64,7 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       $: 'jquery',
+      _: 'lodash',
       jQuery: 'jquery',
       tooltip: 'tooltip'
     }),

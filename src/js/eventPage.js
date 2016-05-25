@@ -1,7 +1,6 @@
 'use strict';
 
 import { Tablist, Tab } from './models';
-import { template } from './helpers.js';
 import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 
 // chrome.runtime.getBackgroundPage pulls in the window object

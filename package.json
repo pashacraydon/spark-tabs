@@ -16,7 +16,9 @@
   "homepage": "https://github.com/pashasc/spark_tabs",
   "dependencies": {
     "jquery": "^2.1.4",
-    "tooltip": "^1.6.0"
+    "lodash": "^4.13.1",
+    "tooltip": "^1.6.0",
+    "underscore-template-loader": "^0.7.3"
   },
   "devDependencies": {
     "autoprefixer-loader": "^1.2.0",
