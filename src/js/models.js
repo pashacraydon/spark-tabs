@@ -11,6 +11,7 @@ class Tab {
 			'updated': new Date(),
 			'suspended': false,
 			'whitelisted': false,
+			'totalMinutes': 0,
 			'assets': {
 				'binPngUrl': chrome.extension.getURL('assets/bin.png'),
 				'pinPngUrl': chrome.extension.getURL('assets/pin.png'),
@@ -214,35 +215,39 @@ class Tablist {
 		let now = new Date(),
 			ms = now.getTime() - tab.get('updated').getTime(),
 			minutesActive = ms / 60000,
-			minutes = tab.get('active_time_mins') ? (tab.get('active_time_mins') + minutesActive) : minutesActive,
-			hours = minutes / 60;
+			totalMinutes = tab.get('active_time_mins') ? (tab.get('active_time_mins') + minutesActive) : minutesActive,
+			hours = Math.floor(totalMinutes / 60);
 
 		function friendlyTime() {
-			let time = '';
+			let time = '',
+				mins = totalMinutes - (hours * 60);
 
 			if (hours >= 1) {
-				time = Math.floor(hours) + 'h ';
+				time = hours + 'h ';
 			}
 
-			if (minutes >= 1) {
-				time += Math.floor(minutes) + 'm';
+			if (mins >= 1) {
+				time += Math.floor(mins) + 'm';
 			}
 
 			return time;
 		}
 
-		function update() {
-			tab.set({
-				'active_time_mins': minutes,
-				'active_time_friendly': friendlyTime()
-			});
-		}
-
 		return {
-			'mins': minutes,
-			'friendly': friendlyTime(),
-			'update': update
+			'mins': totalMinutes,
+			'friendly': friendlyTime()
 		}
+	}
+
+	updateActiveTime() {
+		let tab = this.prevActiveTab().get(),
+			activeTime = this.activeTime();
+		if (!tab || !activeTime) return false;
+
+		tab.set({
+			'active_time_mins': activeTime.mins,
+			'active_time_friendly': activeTime.friendly
+		});
 	}
 
 	buildFaviconUrl(tab) {
@@ -275,8 +280,7 @@ class Tablist {
 		Updates occur on all chrome listener events in the eventPage
 	*/
 	update(updatedTab, options) {
-		var tabItem = this.get(updatedTab.id),
-			activeTime = this.activeTime();
+		var tabItem = this.get(updatedTab.id);
 
 		options || (options = {});
 
@@ -287,9 +291,7 @@ class Tablist {
 			tab.set(tabItem);
 			tab.set(updatedTab);
 
-			if (activeTime) {
-				activeTime.update();
-			}
+			this.updateActiveTime();
 
 			tab.set({
 				'whitelisted': this.isWhitelisted(tab),
@@ -335,7 +337,7 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			return b.get('updated').getTime() - a.get('updated').getTime();
+			return b.get('active_time_mins') - a.get('active_time_mins');
 		}
 		this.tabs.sort(sortByDate);
 	}
