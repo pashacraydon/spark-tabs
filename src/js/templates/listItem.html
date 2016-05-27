@@ -13,10 +13,7 @@
 	<% } %>
 	<span class="time-ago">
 		<% if (typeof active_time_friendly != 'undefined' && active_time_friendly) { %>
-			<%= active_time_friendly %>
-		<% } %>
-		<% if (typeof active_time_friendly != 'undefined' && active_time_friendly && typeof time_ago != 'undefined' && time_ago) { %>
-			|
+			(<%= active_time_friendly %>)
 		<% } %>
 		<% if (typeof time_ago != 'undefined') { %>
 			<%= time_ago %>

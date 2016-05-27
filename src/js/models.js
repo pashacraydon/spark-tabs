@@ -44,11 +44,16 @@ class Tab {
 class Tablist {
 	constructor () {
 		this.tabs = [];
-		this.history = [];
-		this.settings = {
-			'suspendAfterMins': SUSPEND_AFTER_MINS_DEFAULT,
-			'whitelist': []
-		};
+		this._history = [];
+		this._suspendAfterMins = SUSPEND_AFTER_MINS_DEFAULT;
+		this._whitelist = [];
+	}
+
+	destroy() {
+		this.tabs = [];
+		this._history = [];
+		this._suspendAfterMins = 0;
+		this._whitelist = [];
 	}
 
 	render() {
@@ -59,7 +64,10 @@ class Tablist {
 		chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
 			if (!queryTabs[0]) return false;
 			var currWindowId = queryTabs[0].windowId,
-				elements = '';
+				elements = '',
+				activeTab = this.find(queryTabs[0].id);
+
+			this.updateActiveTime(activeTab);
 
 			$.each(this.tabs, (count, tab) => {
 				if (!tab) return;
@@ -67,6 +75,9 @@ class Tablist {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.set({ 'time_ago': timeAgo.friendly });
 					tab.set({ 'el': listItemTpl(tab.attributes) });
+					chrome.tabs.move(tab.get('id'), { 'index': count }, function () {
+						if (chrome.runtime.lastError) return false;
+					});
 					elements += tab.get('el');
 				}
 			});
@@ -77,16 +88,16 @@ class Tablist {
 		return deferred.promise();
 	}
 
-	destroy() {
-		this.tabs = [];
-		this.history = [];
-		this.settings = {};
+	find(tabId) {
+		return _.find(this.tabs, function (tab) {
+			return tab.get('id') === tabId;
+		});
 	}
 
-	get(id) {
+	get(tabId) {
 		if (!this.tabs) return;
-		let found = $.grep(this.tabs, (item) => {
-			return (item.get('id') === id);
+		let found = $.grep(this.tabs, (tab) => {
+			return (tab.get('id') === tabId);
 		});
 
 		return found[0];
@@ -116,12 +127,12 @@ class Tablist {
 
 	prevActiveTab() {
 		function add(tabId) {
-			this.history.push(tabId);
+			this._history.push(tabId);
 		}
 
 		function get() {
-			let prevTabIndex = (this.history.length === 1) ? (this.history.length - 1) : (this.history.length - 2),
-				prevTabId = this.history[prevTabIndex];
+			let prevTabIndex = (this._history.length === 1) ? (this._history.length - 1) : (this._history.length - 2),
+				prevTabId = this._history[prevTabIndex];
 			return this.get(prevTabId);
 		}
 
@@ -137,13 +148,12 @@ class Tablist {
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab().get(),
-			limiter = this.settings.suspendAfterMins;
+			limiter = this._suspendAfterMins;
 
-		if (tab.whitelisted) return false;
-		if (tab.suspended) return false;
-		if (tab.pinned) return false;
-		if (this.settings.suspendAfterMins === "never") return false;
-		if (prevActiveTab) return false;
+		if (tab.get('whitelisted')) return false;
+		if (tab.get('suspended')) return false;
+		if (tab.get('pinned')) return false;
+		if (this._suspendAfterMins === "never") return false;
 
 		if ((limiter === 1) || (limiter === 3)) {
 			if ((limiter === 1) && (timeAgo.hours < 1)) return false;
@@ -153,7 +163,7 @@ class Tablist {
 			if ((timeAgo.mins < limiter) && (timeAgo.hours < 1)) return false;
 		}
 
-		chrome.tabs.get(tab.id, (tabItem) => {
+		chrome.tabs.get(tab.get('id'), (tabItem) => {
 			if (chrome.runtime.lastError) {
 				return false;
 			}
@@ -208,8 +218,7 @@ class Tablist {
 		Get the total time a tab has spent in an 'active' state,
 		this is the 'previously' active tab after an 'update' event.
 	*/
-	activeTime() {
-		let tab = this.prevActiveTab().get();
+	activeTime(tab) {
 		if (!tab) return false;
 
 		let now = new Date(),
@@ -226,8 +235,8 @@ class Tablist {
 				time = hours + 'h ';
 			}
 
-			if (mins >= 1) {
-				time += Math.floor(mins) + 'm';
+			if (mins) {
+				time += mins.toFixed(2) + 'm';
 			}
 
 			return time;
@@ -239,9 +248,9 @@ class Tablist {
 		}
 	}
 
-	updateActiveTime() {
-		let tab = this.prevActiveTab().get(),
-			activeTime = this.activeTime();
+	updateActiveTime(activeTab) {
+		let tab = activeTab || this.prevActiveTab().get(),
+			activeTime = this.activeTime(tab);
 		if (!tab || !activeTime) return false;
 
 		tab.set({
@@ -266,10 +275,10 @@ class Tablist {
 	}
 
 	isWhitelisted(tab) {
-		if (!this.settings.whitelist.length) return false;
+		if (!this._whitelist.length) return false;
 		if (tab.get('whitelisted')) return true;
 		if (tab.get('url')) {
-			if (new RegExp(this.settings.whitelist.join("|")).test(tab.get('url'))) {
+			if (new RegExp(this._whitelist.join("|")).test(tab.get('url'))) {
 			   return true;
 			}
 		}
@@ -291,7 +300,9 @@ class Tablist {
 			tab.set(tabItem);
 			tab.set(updatedTab);
 
-			this.updateActiveTime();
+			if (options.listener === "onHighlighted") {
+				this.updateActiveTime();
+			}
 
 			tab.set({
 				'whitelisted': this.isWhitelisted(tab),

@@ -6,14 +6,15 @@ import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
 
-function onTabUpdated (attrs) {
+function onTabUpdated (attrs, opts) {
+	opts || (opts = {});
 	if (attrs.title === "New Tab") return false;
 
 	if (!list.get(attrs.id)) {
 		list.create(attrs);
 	}
 	else if (list.get(attrs.id)) {
-		list.update(attrs);
+		list.update(attrs, opts);
 	}
 }
 
@@ -21,7 +22,7 @@ chrome.tabs.onHighlighted.addListener((info) => {
 	$.each(info.tabIds, (index, tabId) => {
 		chrome.tabs.get(tabId, (tab) => {
 			if (chrome.runtime.lastError) return false;
-			onTabUpdated(tab);
+			onTabUpdated(tab, { 'listener': 'onHighlighted' });
 		});
 	});
 });
@@ -35,7 +36,7 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
 	chrome.tabs.get(activeInfo.tabId, (tab) => {
 		if (chrome.runtime.lastError) return false;
-		onTabUpdated(tab);
+		onTabUpdated(tab, { 'listener': 'onActivated' });
 	});
 
 	list.prevActiveTab().add(activeInfo.tabId);
@@ -65,20 +66,20 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
 	if (changes.suspendAfterMins) {
-		list.settings.suspendAfterMins = changes.suspendAfterMins.newValue;
+		list._suspendAfterMins = changes.suspendAfterMins.newValue;
 	}
 
 	if (changes.whitelist) {
-		list.settings.whitelist = changes.whitelist.newValue;
+		list._whitelist = changes.whitelist.newValue;
 	}
 });
 
 chrome.storage.sync.get('suspendAfterMins', (items) => {
-	list.settings.suspendAfterMins = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
+	list._suspendAfterMins = (items.suspendAfterMins || SUSPEND_AFTER_MINS_DEFAULT);
 });
 
 chrome.storage.sync.get('whitelist', (items) => {
-	list.settings.whitelist = (items.whitelist || []);
+	list._whitelist = (items.whitelist || []);
 });
 
 chrome.runtime.onInstalled.addListener((details) => {
