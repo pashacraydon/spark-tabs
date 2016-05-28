@@ -11,7 +11,7 @@ class Tab {
 			'updated': new Date(),
 			'suspended': false,
 			'whitelisted': false,
-			'totalMinutes': 0,
+			'active_time': 0,
 			'assets': {
 				'binPngUrl': chrome.extension.getURL('assets/bin.png'),
 				'pinPngUrl': chrome.extension.getURL('assets/pin.png'),
@@ -68,6 +68,10 @@ class Tablist {
 				activeTab = this.find(queryTabs[0].id);
 
 			this.updateActiveTime(activeTab);
+
+			if (activeTab) {
+				activeTab.set({ 'updated': new Date() });
+			}
 
 			$.each(this.tabs, (count, tab) => {
 				if (!tab) return;
@@ -214,48 +218,79 @@ class Tablist {
 		}
 	}
 
+	onWindowFocusChanged(windowId) {
+		this.stopCountingActiveTime();
+	}
+
+	stopCountingActiveTime() {
+		let tab = this.get(this._currentActiveTabId);
+		if (!tab) return false;
+		tab.set({
+			'updated': new Date()
+		});
+		this._updated = new Date();
+		this.updateActiveTime(tab);
+	}
+
 	/*
 		Get the total time a tab has spent in an 'active' state,
-		this is the 'previously' active tab after an 'update' event.
+		this is the 'previously' active tab after an 'update' event or
+		the 'active_time_update' if no tabs have been updated.
 	*/
 	activeTime(tab) {
-		if (!tab) return false;
+		let self = this;
+		function calcMilliseconds() {
+			let now = new Date(),
+				activeTabChanged = (self._updated !== tab.get('updated').getTime());
 
-		let now = new Date(),
-			ms = now.getTime() - tab.get('updated').getTime(),
-			minutesActive = ms / 60000,
-			totalMinutes = tab.get('active_time_mins') ? (tab.get('active_time_mins') + minutesActive) : minutesActive,
-			hours = Math.floor(totalMinutes / 60);
+			if (activeTabChanged) {
+				return (now.getTime() - tab.get('updated').getTime()) + tab.get('active_time');
+			}
+			else {
+				return (now.getTime() - tab.get('active_time_update').getTime()) + tab.get('active_time');
+			}
+		}
+
+		let milliseconds = calcMilliseconds();
+		this._updated = tab.get('updated').getTime();
 
 		function friendlyTime() {
 			let time = '',
-				mins = totalMinutes - (hours * 60);
+				seconds = Math.floor((milliseconds / 1000) % 60),
+				minutes = Math.floor((milliseconds / (1000*60)) % 60),
+				hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
 
 			if (hours >= 1) {
 				time = hours + 'h ';
 			}
 
-			if (mins) {
-				time += mins.toFixed(2) + 'm';
+			if (minutes >= 1) {
+				time += minutes + 'm ';
 			}
+
+			time += seconds + 's ';
 
 			return time;
 		}
 
 		return {
-			'mins': totalMinutes,
+			'milliseconds': milliseconds,
 			'friendly': friendlyTime()
 		}
 	}
 
 	updateActiveTime(activeTab) {
 		let tab = activeTab || this.prevActiveTab().get(),
-			activeTime = this.activeTime(tab);
-		if (!tab || !activeTime) return false;
+			activeTime;
+
+		if (!tab) return false;
+
+		activeTime = this.activeTime(tab);
 
 		tab.set({
-			'active_time_mins': activeTime.mins,
-			'active_time_friendly': activeTime.friendly
+			'active_time': activeTime.milliseconds,
+			'active_time_friendly': activeTime.friendly,
+			'active_time_update': new Date()
 		});
 	}
 
@@ -313,6 +348,7 @@ class Tablist {
 			tab.set({ 'faviconRenderUrl': this.buildFaviconUrl(tab) })
 			tab.set({ 'el': tab });
 
+			this._currentActiveTabId = tab.get('id');
 
 			if (!options.ignoreExtraActions) {
 				$.each(this.tabs, (count, tab) => {
@@ -348,7 +384,7 @@ class Tablist {
 
 	sort() {
 		function sortByDate(a, b) {
-			return b.get('active_time_mins') - a.get('active_time_mins');
+			return b.get('active_time') - a.get('active_time');
 		}
 		this.tabs.sort(sortByDate);
 	}

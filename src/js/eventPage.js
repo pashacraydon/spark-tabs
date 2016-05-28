@@ -103,4 +103,7 @@ chrome.windows.onRemoved.addListener(function (windowId) {
 	});
 });
 
+chrome.windows.onFocusChanged.addListener(function (windowId) {
+	window.list.onWindowFocusChanged(windowId);
+});
 

@@ -9,16 +9,17 @@
 		<a href="<%= url %>" class="js-title">
 			<%= title %>
 		</a>
+		<br />
+		<span class="time">
+			<% if (typeof active_time_friendly != 'undefined' && active_time_friendly) { %>
+				<span class="active-time"><%= active_time_friendly %> active</span>
+			<% } %>
+			<% if (typeof time_ago != 'undefined' && time_ago) { %>
+				<span class="time-ago"> | <%= time_ago %></span>
+			<% } %>
+		</span>
 	</span>
 	<% } %>
-	<span class="time-ago">
-		<% if (typeof active_time_friendly != 'undefined' && active_time_friendly) { %>
-			(<%= active_time_friendly %>)
-		<% } %>
-		<% if (typeof time_ago != 'undefined') { %>
-			<%= time_ago %>
-		<% } %>
-	</span>
 	<ul class="link-options">
 		<li>
 			<a href="#" class="js-close-tab close-tab" data-tooltip="Throw out tab | t">

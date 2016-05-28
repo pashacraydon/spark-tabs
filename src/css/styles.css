@@ -14,14 +14,18 @@ ul li a {
 
 ul li.tab-item {
 	position: relative;
-	padding: 6px 90px 6px 15px;
+	padding: 6px 0 6px 15px;
 	margin: 0;
 	border-left: 5px solid #150385;
 	height: 32px;
-	line-height: 32px;
 	overflow: hidden;
 	border-bottom: 1px solid #ddd;
-	width: 415px;
+	width: 520px;
+}
+
+ul li.tab-item:hover .title,
+ul li.tab-item.selected .title {
+	max-width: 360px;
 }
 
 ul li.tab-item.suspended {
@@ -139,13 +143,20 @@ input:focus {
 .title {
 	display: inline-block;
 	padding: 0 0 0 30px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 480px;
+}
+
+.title a {
+	white-space: nowrap;
 }
 
 .suspended .title a {
 	color: #bbb;
 }
 
-.suspended .time-ago {
+.suspended .time {
 	color: #bbb;
 }
 
@@ -155,11 +166,15 @@ input:focus {
 	opacity: 0.5;
 }
 
-.time-ago {
+.time {
 	font-size: 11px;
-	position: absolute;
-	right: 10px;
 	color: #999;
+}
+
+.time .active-time {
+}
+
+.time .time-ago {
 }
 
 .filter-hidden {
@@ -172,16 +187,21 @@ input:focus {
 
 ul.link-options {
 	position: absolute;
-	top: 10px;
+	top: 0;
 	right: 0;
 	display: none;
-	min-width: 90px;
+	min-width: 120px;
 	text-align: right;
+	padding: 8px 10px;
 }
 
 ul li.tab-item.selected ul.link-options {
 	display: block;
-	background-color: #E6EDF5;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+2,e6edf5+14&0+2,1+14 */
+	background: -moz-linear-gradient(left,  rgba(255,255,255,0) 2%, rgba(230,237,245,1) 14%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 2%,rgba(230,237,245,1) 14%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right,  rgba(255,255,255,0) 2%,rgba(230,237,245,1) 14%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e6edf5',GradientType=1 ); /* IE6-9 */
 }
 
 ul.link-options li {
