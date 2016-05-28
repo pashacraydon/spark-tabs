@@ -36,7 +36,7 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
 	chrome.tabs.get(activeInfo.tabId, (tab) => {
 		if (chrome.runtime.lastError) return false;
-		onTabUpdated(tab, { 'listener': 'onActivated' });
+	//	onTabUpdated(tab, { 'listener': 'onActivated' });
 	});
 
 	list.prevActiveTab().add(activeInfo.tabId);
@@ -72,6 +72,10 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 	if (changes.whitelist) {
 		list._whitelist = changes.whitelist.newValue;
 	}
+
+	if (changes.maximumTabs) {
+		list._maxTabs = changes.maximumTabs.newValue;
+	}
 });
 
 chrome.storage.sync.get('suspendAfterMins', (items) => {
@@ -80,6 +84,10 @@ chrome.storage.sync.get('suspendAfterMins', (items) => {
 
 chrome.storage.sync.get('whitelist', (items) => {
 	list._whitelist = (items.whitelist || []);
+});
+
+chrome.storage.sync.get('maximumTabs', (items) => {
+	list._maxTabs = (items.maximumTabs || []);
 });
 
 chrome.runtime.onInstalled.addListener((details) => {

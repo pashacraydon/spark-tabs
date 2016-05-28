@@ -1,7 +1,7 @@
 'use strict';
 
 import listItemTpl from './templates/listItem.html'
-import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
+import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT } from './constants.js';
 
 
 class Tab {
@@ -46,6 +46,7 @@ class Tablist {
 		this.tabs = [];
 		this._history = [];
 		this._suspendAfterMins = SUSPEND_AFTER_MINS_DEFAULT;
+		this._maxTabs = MAX_TABS_DEFAULT;
 		this._whitelist = [];
 	}
 
@@ -59,8 +60,6 @@ class Tablist {
 	render() {
 		let deferred = $.Deferred();
 
-		this.sort();
-
 		chrome.tabs.query({ currentWindow: true, active: true }, (queryTabs) => {
 			if (!queryTabs[0]) return false;
 			var currWindowId = queryTabs[0].windowId,
@@ -68,6 +67,7 @@ class Tablist {
 				activeTab = this.find(queryTabs[0].id);
 
 			this.updateActiveTime(activeTab);
+			this.sort();
 
 			if (activeTab) {
 				activeTab.set({ 'updated': new Date() });
@@ -152,8 +152,11 @@ class Tablist {
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab().get(),
-			limiter = this._suspendAfterMins;
+			limiter = this._suspendAfterMins,
+			maxTabs = (this._maxTabs - 1); // index begins at 0
 
+		if (this.tabs.length <= maxTabs) return false;
+		if (tab.get('priority') <= maxTabs) return false;
 		if (tab.get('whitelisted')) return false;
 		if (tab.get('suspended')) return false;
 		if (tab.get('pinned')) return false;
@@ -324,15 +327,11 @@ class Tablist {
 		Updates occur on all chrome listener events in the eventPage
 	*/
 	update(updatedTab, options) {
-		var tabItem = this.get(updatedTab.id);
+		var tab = this.get(updatedTab.id);
 
 		options || (options = {});
 
-		if (tabItem) {
-			let index = this.tabs.indexOf(tabItem),
-				tab = this.tabs[index];
-
-			tab.set(tabItem);
+		if (tab) {
 			tab.set(updatedTab);
 
 			if (options.listener === "onHighlighted") {
@@ -342,16 +341,14 @@ class Tablist {
 			tab.set({
 				'whitelisted': this.isWhitelisted(tab),
 				'updated': new Date(),
-				'time_ago': 0
+				'time_ago': 0,
+				'faviconRenderUrl': this.buildFaviconUrl(tab)
 			});
 
-			tab.set({ 'faviconRenderUrl': this.buildFaviconUrl(tab) })
-			tab.set({ 'el': tab });
-
-			this._currentActiveTabId = tab.get('id');
-
 			if (!options.ignoreExtraActions) {
+				this.sort();
 				$.each(this.tabs, (count, tab) => {
+					tab.set({ 'priority': count });
 					this.suspend(tab);
 				});
 			}

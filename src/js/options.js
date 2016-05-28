@@ -1,11 +1,12 @@
 'use strict';
 
-import { SUSPEND_AFTER_MINS_DEFAULT, radix } from './constants.js';
+import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT, radix } from './constants.js';
 
 let $whitelistSubmit,
   $whitelistInput,
   $selectSuspend,
   $whitelistRegion,
+  $maxmimumDefault,
   $errorMsg,
   whitelist = [];
 
@@ -74,6 +75,16 @@ function onWhitelistSubmit (event) {
   }
 }
 
+function onMaximumTabsSelectChange (event) {
+  let $this = $(event.target),
+    newMaximumValue = ($this.val() === "none") ? $this.val() : parseInt($this.val(), radix);
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  chrome.storage.sync.set({'maximumTabs': newMaximumValue });
+}
+
 function onSuspendSelectChange (event) {
   let $this = $(event.target),
     newSuspendValue = ($this.val() === "never") ? $this.val() : parseInt($this.val(), radix);
@@ -90,6 +101,7 @@ $(document).ready(() => {
   $selectSuspend = $('.js-select-suspend');
   $errorMsg = $('.error-msg');
   $whitelistRegion = $('.js-whitelisted-region');
+  $maxmimumDefault = $('.js-select-maximum-tabs');
 
   $('.icon').prepend('<img src="' + chrome.extension.getURL('assets/icon48.png') + '" />')
 
@@ -99,13 +111,20 @@ $(document).ready(() => {
   });
 
   chrome.storage.sync.get('whitelist', (items) => {
+    console.log(items.whitelist);
     if (items.whitelist) {
       whitelist = items.whitelist;
     }
     renderWhitelist();
   });
 
+  chrome.storage.sync.get('maximumTabs', (items) => {
+    let maxTabs = items.maximumTabs || MAX_TABS_DEFAULT;
+    $('.js-select-maximum-tabs option[value="' + maxTabs + '"]').attr('selected', true);
+  })
+
   $whitelistSubmit.on('click', onWhitelistSubmit);
   $selectSuspend.on('change', onSuspendSelectChange);
+  $maxmimumDefault.on('change', onMaximumTabsSelectChange);
 });
 

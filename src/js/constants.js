@@ -4,6 +4,7 @@ const SUSPEND_AFTER_MINS_DEFAULT = 40;
 const FILTER_HIDE_CLASS = 'filter-hidden';
 const SELECTED_CLASS = 'selected';
 const SUSPENDED_CLASS = 'suspended';
+const MAX_TABS_DEFAULT = 8;
 const keys = {
 		'BACKSPACE_KEY': 8,
 		'ENTER_KEY': 13,
@@ -19,6 +20,7 @@ const keys = {
 const radix = 10;
 
 export { SUSPEND_AFTER_MINS_DEFAULT,
+         MAX_TABS_DEFAULT,
          FILTER_HIDE_CLASS,
          SELECTED_CLASS,
          SUSPENDED_CLASS,
