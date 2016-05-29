@@ -147,7 +147,7 @@ function onCloseAllTabsClick (event) {
 			to the list after it has been removed.
 		*/
 		chrome.tabs.get(id, (tab) => {
-			list.set(tab.get('id'), { 'suspended': true, 'pinned': false });
+			list.set(tab.id, { 'suspended': true, 'pinned': false });
 			chrome.tabs.remove(id, () => {
 				$(this).closest('li.tab-item').addClass(c.SUSPENDED_CLASS);
 			});

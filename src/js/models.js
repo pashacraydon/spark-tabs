@@ -74,7 +74,7 @@ class Tablist {
 				elements = '',
 				activeTab = this.find(queryTabs[0].id);
 
-			this.updateActiveTime(activeTab);
+			this.activeTime().update(activeTab);
 			this.sort();
 
 			if (activeTab) {
@@ -235,22 +235,22 @@ class Tablist {
 		}
 	}
 
-	onSystemStateChange() {
-		this.stopCountingActiveTime();
+	onSystemStateChange(newState) {
+		let tab = this.get(this._currentActiveTabId);
+		if (!tab) return false;
+
+		if (newState !== "active") {
+			this.activeTime().stop(tab);
+		}
+		else {
+			this.activeTime().start(tab);
+		}
 	}
 
 	onWindowFocusChanged(windowId) {
-		this.stopCountingActiveTime();
-	}
-
-	stopCountingActiveTime() {
 		let tab = this.get(this._currentActiveTabId);
 		if (!tab) return false;
-		tab.set({
-			'updated': new Date()
-		});
-		this._updated = new Date();
-		this.updateActiveTime(tab);
+		this.activeTime().stop(tab);
 	}
 
 	/*
@@ -258,24 +258,10 @@ class Tablist {
 		this is the 'previously' active tab after an 'update' event or
 		the 'active_time_update' if no tabs have been updated.
 	*/
-	activeTime(tab) {
+	activeTime() {
 		let self = this;
-		function calcMilliseconds() {
-			let now = new Date(),
-				activeTabChanged = (self._updated !== tab.get('updated').getTime());
 
-			if (activeTabChanged) {
-				return (now.getTime() - tab.get('updated').getTime()) + tab.get('active_time');
-			}
-			else {
-				return (now.getTime() - tab.get('active_time_update').getTime()) + tab.get('active_time');
-			}
-		}
-
-		let milliseconds = calcMilliseconds();
-		this._updated = tab.get('updated').getTime();
-
-		function friendlyTime() {
+		function friendlyTime(milliseconds) {
 			let time = '',
 				seconds = Math.floor((milliseconds / 1000) % 60),
 				minutes = Math.floor((milliseconds / (1000*60)) % 60),
@@ -294,25 +280,48 @@ class Tablist {
 			return time;
 		}
 
-		return {
-			'milliseconds': milliseconds,
-			'friendly': friendlyTime()
+		/*
+			1. Calculate the difference between now and the last time a tab was updated.
+			2. Set this new time on the tab.
+		*/
+		function update(activeTab) {
+			let tab = activeTab || self.prevActiveTab().get(),
+				now = new Date(),
+				activeTabChanged = (self._updated !== tab.get('updated').getTime()),
+				milliseconds;
+
+			if (activeTabChanged) {
+				milliseconds = (now.getTime() - tab.get('updated').getTime()) + tab.get('active_time');
+			}
+			else {
+				milliseconds = (now.getTime() - tab.get('active_time_update').getTime()) + tab.get('active_time');
+			}
+
+			self._updated = tab.get('updated').getTime();
+
+			tab.set({
+				'active_time': milliseconds,
+				'active_time_friendly': friendlyTime(milliseconds),
+				'active_time_update': new Date()
+			});
 		}
-	}
 
-	updateActiveTime(activeTab) {
-		let tab = activeTab || this.prevActiveTab().get(),
-			activeTime;
+		function stop(tab) {
+			update(tab);
+		}
 
-		if (!tab) return false;
+		function start(tab) {
+			tab.set({
+				'updated': new Date(),
+				'active_time_update': new Date()
+			});
+		}
 
-		activeTime = this.activeTime(tab);
-
-		tab.set({
-			'active_time': activeTime.milliseconds,
-			'active_time_friendly': activeTime.friendly,
-			'active_time_update': new Date()
-		});
+		return {
+			'update': update,
+			'stop': stop,
+			'start': start
+		}
 	}
 
 	isWhitelisted(tab) {
@@ -338,7 +347,7 @@ class Tablist {
 			tab.set(updatedTab);
 
 			if (options.listener === "onHighlighted") {
-				this.updateActiveTime();
+				this.activeTime().update();
 			}
 
 			tab.set({
@@ -346,6 +355,8 @@ class Tablist {
 				'updated': new Date(),
 				'time_ago': 0
 			});
+
+			this._currentActiveTabId = tab.get('id');
 
 			if (!options.ignoreExtraActions) {
 				this.sort();

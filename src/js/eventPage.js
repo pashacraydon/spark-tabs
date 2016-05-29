@@ -1,7 +1,7 @@
 'use strict';
 
 import { Tablist, Tab } from './models';
-import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT } from './constants.js';
+import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT, SECONDS_UNTIL_IDLE } from './constants.js';
 
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
@@ -115,9 +115,8 @@ chrome.windows.onFocusChanged.addListener(function (windowId) {
 	window.list.onWindowFocusChanged(windowId);
 });
 
+chrome.idle.setDetectionInterval(SECONDS_UNTIL_IDLE);
 chrome.idle.onStateChanged.addListener(function (newState) {
-	if (newState.idleState !== "active") {
-		window.list.onSystemStateChange();
-	}
+	window.list.onSystemStateChange(newState);
 });
 
