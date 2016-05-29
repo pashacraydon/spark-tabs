@@ -49,7 +49,7 @@ describe("Event callbacks", function () {
       };
 
       chrome.storage.onChanged.trigger(changes);
-      chai.assert.equal(window.list.settings.suspendAfterMins, 40);
+      chai.assert.equal(window.list._suspendAfterMins, 40);
     });
 
     it("should update list settings on whitelist storage changes.", function () {
@@ -62,7 +62,7 @@ describe("Event callbacks", function () {
       };
 
       chrome.storage.onChanged.trigger(changes);
-      chai.assert.deepEqual(window.list.settings.whitelist, [
+      chai.assert.deepEqual(window.list._whitelist, [
         "http://www.nytimes.com",
         "http://www.polygon.com"
       ]);

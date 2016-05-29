@@ -115,7 +115,7 @@ describe("Tablist", function () {
    it("should get the tab if expired setting is 40 minutes and timeAgo is 41 minutes.", function () {
       var tab = this.list.at(0),
         callback;
-      this.list.settings.suspendAfterMins = 40;
+      this.list._suspendAfterMins = 40;
       this.list.set(tab.get('id'), { 'updated': addMinutes(41) });
       chrome.tabs.get.reset();
       this.list.suspend.call(this.list, tab);
@@ -126,7 +126,7 @@ describe("Tablist", function () {
    it("should not get the tab if expired setting is 40 minutes and timeAgo is 39 minutes.", function () {
       var tab = this.list.at(0),
         callback;
-      this.list.settings.suspendAfterMins = 40;
+      this.list._suspendAfterMins = 40;
       this.list.set(tab.get('id'), { 'updated': addMinutes(39) });
 
       chrome.tabs.get.reset();
@@ -137,7 +137,7 @@ describe("Tablist", function () {
    it("should get the tab if expired setting is 1 hr and timeAgo is 1 hr 2 minutes", function () {
       var tab = this.list.at(0),
         callback;
-      this.list.settings.suspendAfterMins = 1;
+      this.list._suspendAfterMins = 1;
       this.list.set(tab.get('id'), { 'updated': addMinutes(62) });
 
       chrome.tabs.get.reset();
@@ -150,7 +150,7 @@ describe("Tablist", function () {
       var tab = this.list.at(0),
         callback;
       this.list.set(tab.get('id'), { 'updated': addMinutes(40) });
-      this.list.settings.suspendAfterMins = 1;
+      this.list._suspendAfterMins = 1;
 
       chrome.tabs.get.reset();
       this.list.suspend.call(this.list, tab);

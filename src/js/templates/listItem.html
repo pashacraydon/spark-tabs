@@ -26,14 +26,14 @@
 				<img src="<%= assets.binPngUrl %>" />
 			</a>
 		</li>
-		<% if ((typeof pinned != 'undefined') || (typeof suspended != 'undefined')) { %>
+		<% if (typeof pinned != 'undefined' && !suspended) { %>
 		<li>
 			<a href="#" class="js-pin pin-tab" data-tooltip="Pin tab | p">
 				<img src="<%= assets.pinPngUrl %>" />
 			</a>
 		</li>
 		<% } %>
-		<% if (typeof suspended != 'undefined') { %>
+		<% if (typeof suspended != 'undefined' && !suspended) { %>
 		<li>
 			<a href="#" class="js-suspend suspend-tab" data-tooltip="Close tab | c">
 				<img src="<%= assets.closePngUrl %>" />

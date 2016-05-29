@@ -40,6 +40,7 @@
         "activeTab",
         "storage",
         "background",
-        "tabs"
+        "tabs",
+        "idle"
     ]
 }

@@ -2,7 +2,7 @@
 
 import listItemTpl from './templates/listItem.html'
 import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT } from './constants.js';
-
+let GOOGLE_FAVICON_DOMAIN_URL = 'https://plus.google.com/_/favicon?domain_url=';
 
 class Tab {
 	constructor (attrs) {
@@ -19,11 +19,17 @@ class Tab {
 			}
 		}, attrs);
 
+		this.setFaviconUrl();
 		this.set({ 'el': listItemTpl(this.attributes) });
 	}
 
 	destroy() {
 		this.attributes = {};
+	}
+
+	setFaviconUrl() {
+		let faviconUrl = this.has('favIconUrl') ? this.get('favIconUrl') : GOOGLE_FAVICON_DOMAIN_URL + this.get('url');
+		this.set({ 'faviconRenderUrl': faviconUrl });
 	}
 
 	set(changeset) {
@@ -146,21 +152,26 @@ class Tablist {
 		}
 	}
 
+	getActiveTabs() {
+		return _.filter(this.tabs, function (tab) {
+			return !tab.get('suspended');
+		});
+	}
+
 	/*
 		Determines if a tab should be closed but stored in the dropdown
 	*/
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab().get(),
-			limiter = this._suspendAfterMins,
-			maxTabs = (this._maxTabs - 1); // index begins at 0
+			limiter = 2; //this._suspendAfterMins;
 
-		if (this.tabs.length <= maxTabs) return false;
-		if (tab.get('priority') <= maxTabs) return false;
 		if (tab.get('whitelisted')) return false;
 		if (tab.get('suspended')) return false;
 		if (tab.get('pinned')) return false;
 		if (this._suspendAfterMins === "never") return false;
+		if (tab.get('priority') < this._maxTabs) return false;
+		if (this.getActiveTabs().length < this._maxTabs) return false;
 
 		if ((limiter === 1) || (limiter === 3)) {
 			if ((limiter === 1) && (timeAgo.hours < 1)) return false;
@@ -219,6 +230,10 @@ class Tablist {
 			'hours': hoursAgo,
 			'friendly': friendlyTime()
 		}
+	}
+
+	onSystemStateChange() {
+		this.stopCountingActiveTime();
 	}
 
 	onWindowFocusChanged(windowId) {
@@ -297,21 +312,6 @@ class Tablist {
 		});
 	}
 
-	buildFaviconUrl(tab) {
-		if (tab.has('favIconUrl')) {
-			return tab.get('favIconUrl');
-		}
-
-		if (tab.get('url')) {
-			let urlStr = tab.get('url').split('/'),
-				urlArr = [],
-				favUrl;
-			urlArr.push(urlStr[0]);
-			urlArr.push(urlStr[2]);
-			return urlArr.join('//') + '/favicon.ico';
-		}
-	}
-
 	isWhitelisted(tab) {
 		if (!this._whitelist.length) return false;
 		if (tab.get('whitelisted')) return true;
@@ -341,8 +341,7 @@ class Tablist {
 			tab.set({
 				'whitelisted': this.isWhitelisted(tab),
 				'updated': new Date(),
-				'time_ago': 0,
-				'faviconRenderUrl': this.buildFaviconUrl(tab)
+				'time_ago': 0
 			});
 
 			if (!options.ignoreExtraActions) {

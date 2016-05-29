@@ -13,7 +13,7 @@ function createList () {
   this.list = new Tablist();
   $.each(fixture, (count, attrs) => {
     this.list.create(attrs);
-    this.list.history.push(history[count]);
+    this.list._history.push(history[count]);
   });
 }
 

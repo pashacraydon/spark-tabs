@@ -111,7 +111,6 @@ $(document).ready(() => {
   });
 
   chrome.storage.sync.get('whitelist', (items) => {
-    console.log(items.whitelist);
     if (items.whitelist) {
       whitelist = items.whitelist;
     }

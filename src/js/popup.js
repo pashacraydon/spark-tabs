@@ -72,7 +72,7 @@ function createTab (tab) {
 	chrome.tabs.create({
 		'url': tab.get('url')
 	}, function () {
-		list.remove(tab.id, function () {
+		list.remove(tab.get('id'), function () {
 			$list.find('#' + tab.get('id')).remove();
 		});
 	});
@@ -86,7 +86,7 @@ function onTitleClick (event) {
 	event.preventDefault();
 	event.stopPropagation();
 
-	if (!$this.closest('a').hasClass('js-title')) {
+	if (!$this.hasClass('js-title')) {
 		return false;
 	}
 

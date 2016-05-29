@@ -1,7 +1,7 @@
 'use strict';
 
 import { Tablist, Tab } from './models';
-import { SUSPEND_AFTER_MINS_DEFAULT } from './constants.js';
+import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT } from './constants.js';
 
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
@@ -87,7 +87,7 @@ chrome.storage.sync.get('whitelist', (items) => {
 });
 
 chrome.storage.sync.get('maximumTabs', (items) => {
-	list._maxTabs = (items.maximumTabs || []);
+	list._maxTabs = (items.maximumTabs || MAX_TABS_DEFAULT);
 });
 
 chrome.runtime.onInstalled.addListener((details) => {
@@ -113,5 +113,11 @@ chrome.windows.onRemoved.addListener(function (windowId) {
 
 chrome.windows.onFocusChanged.addListener(function (windowId) {
 	window.list.onWindowFocusChanged(windowId);
+});
+
+chrome.idle.onStateChanged.addListener(function (newState) {
+	if (newState.idleState !== "active") {
+		window.list.onSystemStateChange();
+	}
 });
 

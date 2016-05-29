@@ -2,11 +2,10 @@ body {
   font-size: 14px;
   max-width: 50%;
   margin: 0 auto;
-  background-color: #eee;
 }
 
 .whitelisted-region {
-  padding-left: 10px;
+  padding-left: 0
 }
 
 .whitelisted-region li {
@@ -38,27 +37,24 @@ body {
 }
 
 fieldset {
-  margin: 20px 0;
-  border: none;
-  background-color: #fff;
+  margin-bottom: 20px;
 }
 
 form.whitelist {
   display: block;
-  padding: 10px;
 }
 
 input[type="text"] {
   border: 1px solid #aaa;
   background-color: #f5f5f5;
-  padding: 10px 2% 10px;
+  padding: 5px 2% 5px;
   width: 96%;
   font-size: 18px;
   margin: 10px 0 0;
 }
 
 input[type="submit"] {
-  margin: 10px 0 0;
+  margin: 5px 0 0;
   padding: 8px 10px 8px;
   border: none;
   font-size: 16px;
