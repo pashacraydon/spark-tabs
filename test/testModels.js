@@ -11,7 +11,7 @@ function addMinutes(minutes) {
 describe("Tab", function () {
 
   beforeEach(function() {
-    this.tab = new Tab
+    this.tab = new Tab(fixture[1]);
   });
 
   afterEach(function() {
@@ -39,6 +39,7 @@ describe("Tablist", function () {
     this.setSpy = sinon.spy(Tablist.prototype, 'set');
 
     this.list = new Tablist();
+    this.list._maxTabs = 5;
 
     $.each(fixture, (count, attrs) => {
       this.list.create(attrs);
@@ -67,7 +68,7 @@ describe("Tablist", function () {
 
     it("should return the tab from its id.", function () {
       var tab = this.list.get(1590);
-      chai.assert.equal(tab.id, 1590);
+      chai.assert.equal(tab.get('id'), 1590);
     });
 
   });
@@ -115,6 +116,7 @@ describe("Tablist", function () {
    it("should get the tab if expired setting is 40 minutes and timeAgo is 41 minutes.", function () {
       var tab = this.list.at(0),
         callback;
+
       this.list._suspendAfterMins = 40;
       this.list.set(tab.get('id'), { 'updated': addMinutes(41) });
       chrome.tabs.get.reset();

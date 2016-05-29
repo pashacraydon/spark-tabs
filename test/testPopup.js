@@ -42,44 +42,17 @@ describe("Popup Modal", function () {
     chai.assert.equal($('.js-tabs-list li.tab-item').length, 4);
   });
 
-  describe("onSuspendClick()", function () {
-
-    it("should get the tab.", function () {
-      console.log($('.js-tabs-list li.tab-item:first').html());
-      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
-      chai.assert.equal(chrome.tabs.get.getCall(0).args[0], '1590');
-    });
-
-    it("should remove the tab.", function () {
-      chrome.tabs.get.reset();
-      chrome.tabs.remove.reset();
-      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
-      chrome.tabs.get.yield(fixture[2]);
-      chai.assert.equal(chrome.tabs.remove.getCall(0).args[0], '1558');
-    });
-
-    it("should not remove the tab from the list.", function () {
-      chrome.tabs.get.reset();
-      chrome.tabs.remove.reset();
-      $('.js-tabs-list li.tab-item:first .js-suspend')[0].click();
-      chrome.tabs.get.yield(fixture[2]);
-      chrome.tabs.remove.yield();
-      chai.assert.isTrue(this.list.get(fixture[2].id) instanceof Tab);
-    });
-
-  });
-
   describe("onPinClick()", function () {
 
     it("should update the tab.", function () {
-      let expectedTabId = 1558;
+      let expectedTabId = 1590;
       $('.js-tabs-list li:first .js-pin')[0].click();
       var callback = chrome.tabs.update.getCall(0).args[2];
       sinon.assert.calledWith(chrome.tabs.update, expectedTabId, { 'pinned': true }, callback);
     });
 
     it("callback should hide its pin icon.", function () {
-      let expectedTabId = 1558;
+      let expectedTabId = 1590;
       $('.js-tabs-list li:first .js-pin')[0].click();
       chrome.tabs.update.yield(expectedTabId, { 'pinned': true });
       chai.assert.isTrue($('.js-tabs-list li:first .js-pin').is(':hidden'));
@@ -90,14 +63,14 @@ describe("Popup Modal", function () {
   describe("onRemoveTabClick()", function () {
 
     it("should close the tab.", function () {
-      let expectedTabId = 1558;
+      let expectedTabId = 1590;
       $('.js-tabs-list li:first .js-close-tab')[0].click();
       sinon.assert.calledWith(this.removeSpy, expectedTabId);
     });
 
     it("callback should remove the item from the UI.", function () {
       $('.js-tabs-list li:first .js-close-tab')[0].click();
-      this.removeSpy.yield(1558);
+      this.removeSpy.yield(1590);
       chai.assert.equal($('.js-tabs-list li.tab-item').length, 3);
     });
 
@@ -106,7 +79,7 @@ describe("Popup Modal", function () {
   describe("onTitleClick()", function () {
 
     it("should create a new tab if it is suspended", function () {
-      let expectedUrl = "https://www.npmjs.com/package/sinon-chrome";
+      let expectedUrl = "https://github.com/Microsoft/TypeScript/issues/2726";
       $('.js-tabs-list li.tab-item').addClass(c.SUSPENDED_CLASS);
       $('.js-tabs-list li.tab-item .js-title')[0].click();
       let callback = chrome.tabs.create.getCall(0).args[1];
@@ -157,22 +130,14 @@ describe("Popup Modal", function () {
       $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
       $('body').trigger($.Event('keyup', { keyCode: c.keys.P_KEY }));
       let callback = chrome.tabs.update.getCall(0).args[2];
-      sinon.assert.calledWith(chrome.tabs.update, 1558, { 'pinned': true}, callback);
+      sinon.assert.calledWith(chrome.tabs.update, 1590, { 'pinned': true}, callback);
     });
 
-    it("should throw out selected tabs on the T key.", function () {
-      $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
-      $('body').trigger($.Event('keyup', { keyCode: c.keys.T_KEY }));
-      let callback = this.removeSpy.getCall(0).args[1];
-      sinon.assert.calledWith(this.removeSpy, 1558, callback);
-    });
-
-    it("should close selected items on the C key.", function () {
+    it("should throw out selected tabs on the C key.", function () {
       $('body').trigger($.Event('keyup', { keyCode: c.keys.K_KEY }));
       $('body').trigger($.Event('keyup', { keyCode: c.keys.C_KEY }));
-      chrome.tabs.get.yield(fixture[2]);
-      let callback = chrome.tabs.remove.getCall(0).args[1];
-      sinon.assert.calledWith(chrome.tabs.remove, 1558, callback);
+      let callback = this.removeSpy.getCall(0).args[1];
+      sinon.assert.calledWith(this.removeSpy, 1590, callback);
     });
 
   });

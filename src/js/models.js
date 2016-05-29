@@ -6,8 +6,9 @@ let GOOGLE_FAVICON_DOMAIN_URL = 'https://plus.google.com/_/favicon?domain_url=';
 
 class Tab {
 	constructor (attrs) {
-
+		attrs || (attrs = {});
 		this.attributes = _.merge({
+			'id': 1,
 			'updated': new Date(),
 			'suspended': false,
 			'whitelisted': false,
@@ -165,7 +166,7 @@ class Tablist {
 	suspend(tab) {
 		let timeAgo = this.getTimeAgo(tab),
 			prevActiveTab = this.prevActiveTab().get(),
-			limiter = 2; //this._suspendAfterMins;
+			limiter = this._suspendAfterMins;
 
 		if (tab.get('whitelisted')) return false;
 		if (tab.get('suspended')) return false;
