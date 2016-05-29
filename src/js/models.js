@@ -12,6 +12,7 @@ class Tab {
 			'suspended': false,
 			'whitelisted': false,
 			'active_time': 0,
+			'active_time_friendly': '0s',
 			'assets': {
 				'binPngUrl': chrome.extension.getURL('assets/bin.png'),
 				'pinPngUrl': chrome.extension.getURL('assets/pin.png'),

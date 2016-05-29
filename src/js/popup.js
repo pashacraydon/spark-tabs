@@ -44,30 +44,6 @@ function onPinClick (event) {
 	});
 }
 
-function onSuspendClick (event) {
-	let $this = $(event.target),
-		id = parseInt($this.closest('li.tab-item').attr('id'), c.radix);
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (!$this.closest('a').hasClass('js-suspend')) {
-		return;
-	}
-
-	/*
-		Because 'chrome.tabs.onRemoved' must destroy tabs,
-		we need to get the tab first so we can add it back
-		to the list after it has been removed.
-	*/
-	chrome.tabs.get(id, (tab) => {
-		list.set(tab.id, { 'suspended': true, 'pinned': false });
-		chrome.tabs.remove(id, () => {
-			$this.closest('li.tab-item').addClass(c.SUSPENDED_CLASS);
-		});
-	});
-}
-
 function createTab (tab) {
 	chrome.tabs.create({
 		'url': tab.get('url')
@@ -181,7 +157,6 @@ function moveSelection (direction) {
 function onBodyKeyup (event) {
 	let pKey = (event.keyCode === c.keys.P_KEY),
 		cKey = (event.keyCode === c.keys.C_KEY),
-		tKey = (event.keyCode === c.keys.T_KEY),
 		upKey = (event.keyCode === c.keys.UP_KEY),
 		downKey = (event.keyCode === c.keys.DOWN_KEY),
 		enterKey = (event.keyCode === c.keys.ENTER_KEY),
@@ -204,10 +179,6 @@ function onBodyKeyup (event) {
 	}
 
 	if (cKey) {
-		$list.find('.' + c.SELECTED_CLASS + ' .js-suspend')[0].click();
-	}
-
-	if (tKey) {
 		$list.find('.' + c.SELECTED_CLASS + ' .js-close-tab')[0].click();
 	}
 
@@ -262,7 +233,6 @@ function updateInterface (list) {
 	$list.on('click', '.js-close-tab', onRemoveTabClick);
 	$list.on('click', '.js-title', onTitleClick);
 	$list.on('click', '.js-pin', onPinClick);
-	$list.on('click', '.js-suspend', onSuspendClick);
 	$list.on('mouseover', 'li.tab-item', onTabItemHover);
 	$filter.on('keyup', onFilterKeyup);
 	$body.on('keyup', onBodyKeyup);

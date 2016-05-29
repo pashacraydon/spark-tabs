@@ -161,8 +161,7 @@ input:focus {
 }
 
 .suspended .close-tab,
-.suspended .pin-tab,
-.suspended .suspend-tab {
+.suspended .pin-tab {
 	opacity: 0.5;
 }
 
@@ -192,7 +191,7 @@ ul.link-options {
 	display: none;
 	min-width: 120px;
 	text-align: right;
-	padding: 8px 10px;
+	padding: 14px 10px;
 }
 
 ul li.tab-item.selected ul.link-options {
@@ -239,10 +238,6 @@ ul.controls-all-tabs img {
 ul.controls-all-tabs li {
 	display: inline-block;
 	margin-left: 10px;
-}
-
-.suspend-tab {
-	top: -2px;
 }
 
 .close-tab {
