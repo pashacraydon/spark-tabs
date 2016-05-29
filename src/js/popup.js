@@ -140,7 +140,18 @@ function onCloseAllTabsClick (event) {
 		return false;
 	}
 	$list.find('li.tab-item:not(:first-child)').each(function (count) {
-		$(this).find('.js-suspend')[0].click();
+		let id = parseInt($(this).closest('li.tab-item').attr('id'), c.radix);
+		/*
+			Because 'chrome.tabs.onRemoved' must destroy tabs,
+			we need to get the tab first so we can add it back
+			to the list after it has been removed.
+		*/
+		chrome.tabs.get(id, (tab) => {
+			list.set(tab.id, { 'suspended': true, 'pinned': false });
+			chrome.tabs.remove(id, () => {
+				$this.closest('li.tab-item').addClass(c.SUSPENDED_CLASS);
+			});
+		});
 	});
 }
 

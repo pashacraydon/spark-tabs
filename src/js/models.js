@@ -170,6 +170,7 @@ class Tablist {
 		if (tab.get('whitelisted')) return false;
 		if (tab.get('suspended')) return false;
 		if (tab.get('pinned')) return false;
+		if (this._maxTabs === "infinite") return false;
 		if (this._suspendAfterMins === "never") return false;
 		if (tab.get('priority') < this._maxTabs) return false;
 		if (this.getActiveTabs().length < this._maxTabs) return false;

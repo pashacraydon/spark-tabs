@@ -77,7 +77,7 @@ function onWhitelistSubmit (event) {
 
 function onMaximumTabsSelectChange (event) {
   let $this = $(event.target),
-    newMaximumValue = ($this.val() === "none") ? $this.val() : parseInt($this.val(), radix);
+    newMaximumValue = ($this.val() === "infinite") ? $this.val() : parseInt($this.val(), radix);
 
   event.preventDefault();
   event.stopPropagation();
