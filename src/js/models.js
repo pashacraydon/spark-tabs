@@ -87,10 +87,14 @@ class Tablist {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.set({ 'time_ago': timeAgo.friendly });
 					tab.set({ 'el': listItemTpl(tab.attributes) });
+
 					chrome.tabs.move(tab.get('id'), { 'index': count }, function () {
 						if (chrome.runtime.lastError) return false;
 					});
-					elements += tab.get('el');
+
+					if (tab.get('id') !== activeTab.get('id')) {
+						elements += tab.get('el');
+					}
 				}
 			});
 

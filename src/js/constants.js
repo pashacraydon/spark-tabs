@@ -5,7 +5,7 @@ const FILTER_HIDE_CLASS = 'filter-hidden';
 const SELECTED_CLASS = 'selected';
 const SUSPENDED_CLASS = 'suspended';
 const MAX_TABS_DEFAULT = 8;
-const SECONDS_UNTIL_IDLE = 60;
+const SECONDS_UNTIL_IDLE = 59;
 const keys = {
 		'BACKSPACE_KEY': 8,
 		'ENTER_KEY': 13,
