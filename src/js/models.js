@@ -290,8 +290,10 @@ class Tablist {
 			2. Set this new time on the tab.
 		*/
 		function update(activeTab) {
-			let tab = activeTab || self.prevActiveTab().get(),
-				now = new Date(),
+			let tab = activeTab || self.prevActiveTab().get();
+			if (!tab) return false;
+
+			let now = new Date(),
 				activeTabChanged = (self._updated !== tab.get('updated').getTime()),
 				milliseconds;
 

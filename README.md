@@ -8,13 +8,14 @@ Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs
 
 ## Features
 
-* Tabs are ordered by recent activity
-* Tabs are automatically closed after idling for set number of minutes (optional, default is 40 minutes)
-    * These tabs are saved in a 'dimmed' state in the dropdown
+* Tabs are ordered according to their longest activity
+* Opening the popup will re-order the tabs in your window by their longest activity (left to right)
+* Optionally, set a maximum number of tabs and idle countdown to automatically close your least used tabs
+	* These tabs are saved in a 'dimmed' state in the dropdown
 * Whitelist urls so their tabs won't automatically close after idling (optional)
 * Close all tabs with one click
 * Find tabs quickly by filtering them by keyword
-* Close, pin, throw out and navigate tabs with keyboard shortcuts
+* Close, pin and navigate tabs with keyboard shortcuts
 
 ## Keyboard Shortcuts
 
