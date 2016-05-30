@@ -203,11 +203,11 @@ describe("Tablist", function () {
       });
 
       it("should sort its tabs by recent activity.", function () {
-        this.list.set(this.tab1.get('id'), { 'updated': addMinutes(21) });
-        this.list.set(this.tab2.get('id'), { 'updated': addMinutes(32) });
-        this.list.set(this.tab3.get('id'), { 'updated': addMinutes(16) });
-        this.list.set(this.tab4.get('id'), { 'updated': addMinutes(56) });
-        this.list.set(this.tab5.get('id'), { 'updated': addMinutes(2) });
+        this.list.set(this.tab1.get('id'), { 'active_time': addMinutes(21) });
+        this.list.set(this.tab2.get('id'), { 'active_time': addMinutes(32) });
+        this.list.set(this.tab3.get('id'), { 'active_time': addMinutes(16) });
+        this.list.set(this.tab4.get('id'), { 'active_time': addMinutes(56) });
+        this.list.set(this.tab5.get('id'), { 'active_time': addMinutes(2) });
 
         this.list.sort();
 
