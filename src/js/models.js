@@ -87,7 +87,7 @@ class Tablist {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.set({ 'time_ago': timeAgo.friendly });
 
-					if (tab.get('id') === activeTab.get('id')) tab.set({ 'currentActive': true });
+					if (activeTab && tab.get('id') === activeTab.get('id')) tab.set({ 'currentActive': true });
 					tab.set({ 'el': listItemTpl(tab.attributes) });
 					tab.set({ 'currentActive': false });
 
