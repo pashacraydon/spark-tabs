@@ -238,19 +238,17 @@ function onFilterKeyup (event) {
 function updateInterface (list) {
 	list.render().done(function (elements) {
 		$list.html(elements);
-	});
-
-	$list.find('li:first').addClass(c.SELECTED_CLASS);
-	$list.on('click', '.js-close-tab', onRemoveTabClick);
-	$list.on('click', '.js-title', onTitleClick);
-	$list.on('click', '.js-pin', onPinClick);
-	$list.on('mouseover', 'li.tab-item', onTabItemHover);
-	$filter.on('keyup', onFilterKeyup);
-	$body.on('keyup', onBodyKeyup);
-	$resetFilter.on('click', onResetFilter);
-	$closeAll.on('click', onCloseAllTabsClick);
-	tooltip({
-		'showDelay': 0
+		$list.on('click', '.js-close-tab', onRemoveTabClick);
+		$list.on('click', '.js-title', onTitleClick);
+		$list.on('click', '.js-pin', onPinClick);
+		$list.on('mouseover', 'li.tab-item', onTabItemHover);
+		$filter.on('keyup', onFilterKeyup);
+		$body.on('keyup', onBodyKeyup);
+		$resetFilter.on('click', onResetFilter);
+		$closeAll.on('click', onCloseAllTabsClick);
+		tooltip({
+			'showDelay': 0
+		});
 	});
 
 	setTimeout(() => {

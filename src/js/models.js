@@ -86,15 +86,16 @@ class Tablist {
 				if (tab.get('windowId') === currWindowId) {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.set({ 'time_ago': timeAgo.friendly });
+
+					if (tab.get('id') === activeTab.get('id')) tab.set({ 'currentActive': true });
 					tab.set({ 'el': listItemTpl(tab.attributes) });
+					tab.set({ 'currentActive': false });
 
 					chrome.tabs.move(tab.get('id'), { 'index': count }, function () {
 						if (chrome.runtime.lastError) return false;
 					});
 
-					if (tab.get('id') !== activeTab.get('id')) {
-						elements += tab.get('el');
-					}
+					elements += tab.get('el');
 				}
 			});
 
