@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Spark Tabs",
     "description": "Automated tabs organization for Chrome.",
-    "version": "0.0.53",
+    "version": "0.0.54",
     "author": "@pashasc",
     "options_page": "options.html",
     "web_accessible_resources": [

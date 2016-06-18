@@ -2,7 +2,7 @@
 
 Automated tabs organization for Chrome.
 
-![alt tag](https://github.com/pashasc/spark_tabs/blob/master/screen_shot.jpg)
+![alt tag](https://github.com/pashasc/spark_tabs/blob/master/src/assets/spark128.png)
 
 Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs/mcbakkceggomfmikgcmcncoobaclkbam/ "Spark Tabs Chrome Extension")
 
