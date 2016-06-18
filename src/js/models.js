@@ -75,6 +75,7 @@ class Tablist {
 				activeTab = this.find(queryTabs[0].id);
 
 			this.activeTime().update(activeTab);
+			this.activeTime().calcTotalActiveTime(currWindowId);
 			this.sort();
 
 			if (activeTab) {
@@ -86,6 +87,7 @@ class Tablist {
 				if (tab.get('windowId') === currWindowId) {
 					let timeAgo = this.getTimeAgo(tab);
 					tab.set({ 'time_ago': timeAgo.friendly });
+					tab.set({ 'percent': this.activeTime().asPercent(tab) });
 
 					if (activeTab && tab.get('id') === activeTab.get('id')) tab.set({ 'currentActive': true });
 					tab.set({ 'el': listItemTpl(tab.attributes) });
@@ -266,6 +268,7 @@ class Tablist {
 	activeTime() {
 		let self = this;
 
+		/* Return a human friendly version of the time in string format */
 		function friendlyTime(milliseconds) {
 			let time = '',
 				seconds = Math.floor((milliseconds / 1000) % 60),
@@ -283,6 +286,29 @@ class Tablist {
 			time += seconds + 's ';
 
 			return time;
+		}
+
+		/* Create a cached value of the total active time for tabs specific to a certain window */
+		function calcTotalActiveTime(windowId) {
+			self._totalActiveTime = _
+			  .chain(self.tabs)
+			  .filter(function (tab) {
+			  	return tab.get('windowId') === windowId;
+			  })
+			  .map(function (tab) {
+			  	return tab.get('active_time');
+			  })
+			  .value()
+			  .reduce(function (sum, n) {
+			  	return sum + n
+			  });
+		}
+
+		/* Return the time a tab has been active as a percentage */
+		function asPercent(tab) {
+			if (self._totalActiveTime > 0) {
+				return ((tab.get('active_time') / self._totalActiveTime)) * 100;
+			}
 		}
 
 		/*
@@ -325,6 +351,8 @@ class Tablist {
 		}
 
 		return {
+			'asPercent': asPercent,
+			'calcTotalActiveTime': calcTotalActiveTime,
 			'update': update,
 			'stop': stop,
 			'start': start
@@ -346,7 +374,8 @@ class Tablist {
 		Updates occur on all chrome listener events in the eventPage
 	*/
 	update(updatedTab, options) {
-		var tab = this.get(updatedTab.id);
+		var tab = this.get(updatedTab.id),
+			reset = 0;
 
 		options || (options = {});
 

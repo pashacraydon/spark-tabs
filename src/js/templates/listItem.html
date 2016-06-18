@@ -10,14 +10,21 @@
 			<%= title %>
 		</a>
 		<br />
-		<span class="time">
+	</span>
+	<span class="time">
+		<% if (typeof percent != 'undefined' && percent) { %>
+			<div class="percentage-bar">
+				<div class="percentage" style="width:<%= percent %>%;"></div>
+			</div>
+		<% } %>
+		<div class="friendly-time <% if (typeof percent == 'undefined' || !percent) { %>no-percent<% } %>">
 			<% if (typeof active_time_friendly != 'undefined' && active_time_friendly) { %>
 				<span class="active-time"><%= active_time_friendly %> active</span>
 			<% } %>
 			<% if (typeof time_ago != 'undefined' && time_ago) { %>
 				<span class="time-ago"> | <%= time_ago %></span>
 			<% } %>
-		</span>
+		</div>
 	</span>
 	<% } %>
 	<ul class="link-options">

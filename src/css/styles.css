@@ -17,7 +17,6 @@ ul li.tab-item {
 	padding: 6px 0 6px 15px;
 	margin: 0;
 	border-left: 5px solid #150385;
-	height: 32px;
 	overflow: hidden;
 	border-bottom: 1px solid #ddd;
 	width: 520px;
@@ -142,7 +141,7 @@ input:focus {
 
 .title {
 	display: inline-block;
-	padding: 0 0 0 30px;
+	padding: 0 0 5px 30px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 480px;
@@ -163,17 +162,6 @@ input:focus {
 .suspended .close-tab,
 .suspended .pin-tab {
 	opacity: 0.5;
-}
-
-.time {
-	font-size: 11px;
-	color: #999;
-}
-
-.time .active-time {
-}
-
-.time .time-ago {
 }
 
 .filter-hidden {
@@ -261,4 +249,43 @@ img.favicon {
 	top: 50%;
 	transform: translateY(-50%);
 }
+
+.time {
+	font-size: 10px;
+	color: #999;
+	display: block;
+	float: left;
+	width: 500px;
+}
+
+.friendly-time {
+	margin: -4px 0 0 10px;
+	float: left;
+}
+
+.friendly-time.no-percent {
+	margin: -4px 0 0 30px;
+}
+
+/* Progress bar */
+.percentage-bar {
+	background-color: #ccc;
+	max-width: 150px;
+	margin-left: 30px;
+	margin-bottom: 3px;
+	float: left;
+	width: 100%;
+}
+
+.percentage-bar .percentage {
+	background-color: #999;
+}
+
+.percentage-bar,
+.percentage-bar .percentage {
+	height: 6px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+	border-radius: 5px 5px 5px 5px;
+}
+
 
