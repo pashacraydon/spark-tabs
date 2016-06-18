@@ -1,7 +1,7 @@
 ul.tab-list {
 	min-width: 520px;
 	list-style-type: none;
-	border-top: 1px solid #ddd;
+	border-top: 1px solid #e6e6e6;
 }
 
 body,
@@ -18,7 +18,7 @@ ul li.tab-item {
 	margin: 0;
 	border-left: 5px solid #150385;
 	overflow: hidden;
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #e6e6e6;
 	width: 520px;
 }
 
@@ -180,12 +180,8 @@ input:focus {
 	display: none;
 }
 
-.selected .title a {
-	text-decoration: underline;
-}
-
 .selected {
-	background-color: #eeeeee !important;
+	background-color: #FDEDDD !important;
 }
 
 ul.link-options {
