@@ -14,6 +14,7 @@ class Tab {
 			'whitelisted': false,
 			'active_time': 0,
 			'active_time_friendly': '0s',
+			'active_time_update': new Date(),
 			'assets': {
 				'binPngUrl': chrome.extension.getURL('assets/bin.png'),
 				'pinPngUrl': chrome.extension.getURL('assets/pin.png'),
