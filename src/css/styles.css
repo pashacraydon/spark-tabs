@@ -24,11 +24,23 @@ ul li.tab-item {
 
 ul li.tab-item:hover .title,
 ul li.tab-item.selected .title {
-	max-width: 360px;
+	max-width: 400px;
 }
 
 ul li.tab-item.suspended {
 	background-color: #f6f6f6;
+}
+
+ul li.tab-item.suspended .favicon {
+	opacity: 0.7;
+}
+
+ul li.tab-item.suspended:hover .title a {
+	color: #666;
+}
+
+ul li.tab-item.suspended:hover .favicon {
+	opacity: 1;
 }
 
 ul li.tab-item.whitelisted {
@@ -168,8 +180,12 @@ input:focus {
 	display: none;
 }
 
+.selected .title a {
+	text-decoration: underline;
+}
+
 .selected {
-	background-color: #E6EDF5 !important;
+	background-color: #eeeeee !important;
 }
 
 ul.link-options {
@@ -184,11 +200,6 @@ ul.link-options {
 
 ul li.tab-item.selected ul.link-options {
 	display: block;
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+2,e6edf5+14&0+2,1+14 */
-	background: -moz-linear-gradient(left,  rgba(255,255,255,0) 2%, rgba(230,237,245,1) 14%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 2%,rgba(230,237,245,1) 14%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right,  rgba(255,255,255,0) 2%,rgba(230,237,245,1) 14%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#e6edf5',GradientType=1 ); /* IE6-9 */
 }
 
 ul.link-options li {
@@ -269,7 +280,7 @@ img.favicon {
 
 /* Progress bar */
 .percentage-bar {
-	background-color: #ccc;
+	background-color: #ddd;
 	max-width: 150px;
 	margin-left: 30px;
 	margin-bottom: 3px;
@@ -278,12 +289,12 @@ img.favicon {
 }
 
 .percentage-bar .percentage {
-	background-color: #999;
+	background-color: #aaa;
 }
 
 .percentage-bar,
 .percentage-bar .percentage {
-	height: 6px;
+	height: 5px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 	border-radius: 5px 5px 5px 5px;
 }
