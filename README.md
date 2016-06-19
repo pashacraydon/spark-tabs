@@ -31,22 +31,18 @@ Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs
 
 ## Dev
 
-* ```npm install -g gulp webpack```
 * ```npm install```
+* Run ```npm run watch```, this will autocompile files on changes
+* In the Chrome extensions page, click ```Load unpacked extension...``` and select the ```build``` directory.
 
 ## Tests
 
-* Run ```gulp test``` , this will autocompile test files on changes
-* Run ```gulp connect``` to run a mocha server, then visit http://localhost:8080/test/runner.html
+* Run ```npm run watch:test``` , this will autocompile test files on changes
+* Run ```npm run tests``` , run tests in node
 
-## Running
+## Upload
 
-* Run ```gulp```.
-* In the Chrome extensions page, click ```Load unpacked extension...``` and select the ```build``` directory.
-
-## Creating a build
-
-* ```gulp build``` will generate a build in ```./dist```.
+* Run ```zip -r spark_tabs.zip build``` and upload in the Chrome dev console
 
 ## License
 

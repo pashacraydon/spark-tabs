@@ -5,6 +5,7 @@ import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT, SECONDS_UNTIL_IDLE } from
 
 // chrome.runtime.getBackgroundPage pulls in the window object
 window.list = new Tablist();
+let list = window.list;
 
 function onTabUpdated (attrs, opts) {
 	opts || (opts = {});

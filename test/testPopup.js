@@ -51,13 +51,6 @@ describe("Popup Modal", function () {
       sinon.assert.calledWith(chrome.tabs.update, expectedTabId, { 'pinned': true }, callback);
     });
 
-    it("callback should hide its pin icon.", function () {
-      let expectedTabId = 1590;
-      $('.js-tabs-list li:first .js-pin')[0].click();
-      chrome.tabs.update.yield(expectedTabId, { 'pinned': true });
-      chai.assert.isTrue($('.js-tabs-list li:first .js-pin').is(':hidden'));
-    });
-
   });
 
   describe("onRemoveTabClick()", function () {
