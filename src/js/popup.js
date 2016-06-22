@@ -273,6 +273,11 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 			'</ul>'
 		);
 
+		$("img").error(function() {
+			console.log($(this));
+		    $(this).hide(); // hide broken favicons
+		});
+
 		$body = $('body');
 		$list = $('.js-tabs-list');
 		$filter = $('[type="search"]');

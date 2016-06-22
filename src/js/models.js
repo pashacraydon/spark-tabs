@@ -31,8 +31,20 @@ class Tab {
 	}
 
 	setFaviconUrl() {
-		let faviconUrl = this.has('favIconUrl') ? this.get('favIconUrl') : GOOGLE_FAVICON_DOMAIN_URL + this.get('url');
-		this.set({ 'faviconRenderUrl': faviconUrl });
+		var delay = 0,
+			faviconUrl;
+
+		if (this.has('favIconUrl')) {
+			faviconUrl = this.get('favIconUrl');
+		}
+		else {
+			delay = 100;
+			faviconUrl = GOOGLE_FAVICON_DOMAIN_URL + this.get('url');
+		}
+
+		setTimeout(() => {
+			this.set({ 'faviconRenderUrl': faviconUrl });
+		}, delay);
 	}
 
 	set(changeset) {
@@ -291,7 +303,7 @@ class Tablist {
 
 		/* Create a cached value of the total active time for tabs specific to a certain window */
 		function calcTotalActiveTime(windowId) {
-			self._totalActiveTime = _
+			var totalActiveTimeArray = _
 			  .chain(self.tabs)
 			  .filter(function (tab) {
 			  	return tab.get('windowId') === windowId;
@@ -299,10 +311,17 @@ class Tablist {
 			  .map(function (tab) {
 			  	return tab.get('active_time');
 			  })
-			  .value()
-			  .reduce(function (sum, n) {
-			  	return sum + n
-			  });
+			  .value();
+
+		 	if (totalActiveTimeArray.length) {
+		 		self._totalActiveTime = totalActiveTimeArray
+		 			.reduce(function (sum, n) {
+			  			return sum + n
+			 		});
+		 	}
+		 	else {
+		 		self._totalActiveTime = 0;
+		 	}
 		}
 
 		/* Return the time a tab has been active as a percentage */
