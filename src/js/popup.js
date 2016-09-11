@@ -71,7 +71,7 @@ function onTitleClick (event) {
 		createTab(tab);
 	}
 	else {
-		chrome.tabs.update(id, { 'highlighted': true }, function () {
+		chrome.tabs.update(id, { 'active': true }, function () {
 			if (chrome.runtime.lastError) {
 				createTab({ 'ur': $this.attr('href') });
 			}
