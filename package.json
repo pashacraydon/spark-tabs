@@ -23,12 +23,13 @@
   },
   "homepage": "https://github.com/pashasc/spark_tabs",
   "dependencies": {
+    "chai": "^3.5.0",
+    "copy-webpack-plugin": "^3.0.1",
     "jquery": "^2.1.4",
     "lodash": "^4.13.1",
     "tooltip": "^1.6.0",
     "underscore-template-loader": "^0.7.3",
-    "webpack": "^1.8.11",
-    "chai": "^3.5.0"
+    "webpack": "^1.8.11"
   },
   "devDependencies": {
     "babel": "6.5.2",

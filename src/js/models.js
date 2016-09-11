@@ -2,7 +2,7 @@
 
 import listItemTpl from './templates/listItem.html'
 import { SUSPEND_AFTER_MINS_DEFAULT, MAX_TABS_DEFAULT } from './constants.js';
-let GOOGLE_FAVICON_DOMAIN_URL = 'https://plus.google.com/_/favicon?domain_url=';
+let GOOGLE_FAVICON_DOMAIN_URL = 'chrome://favicon/';
 
 class Tab {
 	constructor (attrs) {
@@ -351,6 +351,10 @@ class Tablist {
 			}
 
 			self._updated = tab.get('updated').getTime();
+
+			if (!tab.has('setFaviconUrl')) {
+				tab.setFaviconUrl();
+			}
 
 			tab.set({
 				'active_time': milliseconds,

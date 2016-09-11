@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -64,6 +65,14 @@ module.exports = {
       _: 'lodash',
       jQuery: 'jquery',
       tooltip: 'tooltip'
-    })
+    }),
+    // copy extra ./src files to the build folder
+    new CopyWebpackPlugin([
+      { from: 'manifest.json', to: 'manifest.json' },
+      { from: 'src/css', to: 'css' },
+      { from: 'src/assets', to: 'assets' },
+      { from: 'src/options.html', to: 'options.html' },
+      { from: 'src/popup.html', to: 'popup.html' }
+    ])
   ]
 };
