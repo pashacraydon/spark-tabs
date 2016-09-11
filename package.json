@@ -3,6 +3,7 @@
   "version": "0.0.54",
   "description": "A Chrome extension for managing your tab.",
   "scripts": {
+    "zip": "zip -r spark_tabs.zip build",
     "tests": "mocha test/run.js",
     "build": "webpack --config webpack.config.js --progress --colors",
     "build:debug": "webpack --config webpack.config.js --progress --colors --display-error-details",

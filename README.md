@@ -42,7 +42,7 @@ Visit on the [Chrome store](https://chrome.google.com/webstore/detail/spark-tabs
 
 ## Upload
 
-* Run ```zip -r spark_tabs.zip build``` and upload in the Chrome dev console
+* Run ```npm run zip``` and upload ```spark_tabs.zip``` in the Chrome dev console
 
 ## License
 
