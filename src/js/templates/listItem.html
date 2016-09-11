@@ -1,4 +1,4 @@
-<li id="<%= id %>" class="<% if (typeof suspended != 'undefined' && suspended) { print('suspended') } %> tab-item <% if (typeof whitelisted != 'undefined' && whitelisted) { print('whitelisted') } %> <% if (typeof currentActive != 'undefined' && currentActive) { print('selected') } %>">
+<li id="<%= id %>" class="<% if (typeof suspended != 'undefined' && suspended) { print('suspended') } %> tab-item <% if (typeof whitelisted != 'undefined' && whitelisted) { print('whitelisted') } %> <% if (typeof currentActive != 'undefined' && currentActive) { print('active') } %>">
 	<% if (typeof faviconRenderUrl != 'undefined') { %>
 	<span class="favicon">
 		<img class="favicon" src="<%= faviconRenderUrl %>" />

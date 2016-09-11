@@ -274,8 +274,7 @@ chrome.runtime.getBackgroundPage((eventPage) => {
 		);
 
 		$("img").error(function() {
-			console.log($(this));
-		    $(this).hide(); // hide broken favicons
+		  $(this).hide(); // hide broken favicons
 		});
 
 		$body = $('body');

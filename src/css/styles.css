@@ -181,7 +181,15 @@ input:focus {
 }
 
 .selected {
-	background-color: #E4F5FD !important;
+	background-color: #FCFCE6 !important;
+}
+
+.active {
+	background-color: #FCFCCA !important;
+}
+
+.selected.active {
+	background-color: #FCFCE6 !important;
 }
 
 ul.link-options {
